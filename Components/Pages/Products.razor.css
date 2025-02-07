@@ -1,14 +1,16 @@
 ﻿
 .main-container {
     position: relative;
+    width: 100vw; 
+    height: 100vh;
 }
 
 .przyjmij-container {
     position: absolute;
     visibility: hidden;
-    top: 100px;
-    left: 900px;
-    transform: translateX(-50%);
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
     border: #007fbf solid 2px;
     width: 500px;
     height: 600px;
@@ -96,6 +98,10 @@
     background: #38bdfa;
     color: white;
 }
+.close-button {
+    background: #38bdfa;
+    color: white;
+}
 
 .cancel-button:hover {
     background-color: #b1b1b1;
@@ -106,13 +112,17 @@
     background-color: #00a6ed;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
 }
+.close-button:hover {
+    background-color: #00a6ed;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+}
 
 .wydaj-container {
     position: absolute;
     visibility: hidden;
-    top: 100px;
-    left: 900px;
-    transform: translateX(-50%);
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
     border: #007fbf solid 2px;
     width: 500px;
     height: 410px;
@@ -145,9 +155,9 @@
 .wypożycz-container {
     position: absolute;
     visibility: hidden;
-    top: 100px;
-    left: 900px;
-    transform: translateX(-50%);
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
     border: #007fbf solid 2px;
     width: 500px;
     height: 610px;
@@ -180,9 +190,9 @@
 .edytuj-container {
     position: absolute;
     visibility: hidden;
-    top: 100px;
-    left: 900px;
-    transform: translateX(-50%);
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
     border: #007fbf solid 2px;
     width: 500px;
     height: 600px;
@@ -215,9 +225,9 @@
 .usuń-container {
     position: absolute;
     visibility: hidden;
-    top: 250px;
-    left: 950px;
-    transform: translateX(-50%);
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
     border: #007fbf solid 2px;
     width: 500px;
     height: 230px;
@@ -230,6 +240,42 @@
         text-align: center;
         margin-bottom: 55px;
         margin-top: 10px;
+    }
+
+.details-container {
+    position: absolute;
+    visibility: hidden;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border: #007fbf solid 2px;
+    width: 500px;
+    height: 620px;
+    background: #f7fbfd;
+    padding: 20px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+    flex-direction: column;
+    gap: 6px;
+    display: flex;
+}
+
+    .details-container h2 {
+        text-align: center;
+        margin-bottom: 10px;
+    }
+
+    .details-container label {
+        font-weight: bold;
+        margin-top: 5px;
+    }
+
+    .details-container input,
+    .details-container textarea {
+        width: 100%;
+        padding: 5px;
+        margin-top: 5px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
     }
 
 .delete-button {
@@ -340,6 +386,19 @@
     height: 24px;
     display: block;
     margin: 0 auto;
+}
+
+.info-button{
+    border: hidden;
+    background: none;
+    display: flex;
+    width: 100%;
+    height: 100%;
+    padding: 0;
+}
+
+.td-info{
+    padding: 0;
 }
 
 

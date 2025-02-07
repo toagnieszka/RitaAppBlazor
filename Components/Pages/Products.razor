@@ -57,7 +57,7 @@
 
 		<div style="display: flex; align-items: center; gap: 10px; margin-bottom: 0.5rem">
 			<label>
-				Obecna ilość:
+				Aktualna ilość:
 			</label>
 			<div>6</div>
 			<div>szt</div>
@@ -94,7 +94,7 @@
 
 		<div style="display: flex; align-items: center; gap: 10px; margin-bottom: 0.5rem">
 			<label>
-				Obecna ilość:
+				Aktualna ilość:
 			</label>
 			<div>6</div>
 			<div>szt</div>
@@ -120,10 +120,10 @@
 		<input type="date" id="loanDate">
 
 		<label>Wypożyczający:</label>
-		<input type="text" id="lender" placeholder="Wpisz osobę, która daje">
+		<input type="text" id="lender" placeholder="Wpisz dane osoby">
 
 		<label>Biorący:</label>
-		<input type="text" id="borrower" placeholder="Wpisz osobę, która bierze">
+		<input type="text" id="borrower" placeholder="Wpisz dane osoby">
 
 		<label>Komentarz:</label>
 		<textarea id="comment" placeholder="Dodaj komentarz"></textarea>
@@ -192,6 +192,45 @@
 		</div>
 	</div>
 
+	<div class="details-container" id="7">
+		<h2>Szczegóły</h2>
+		<label>
+			Produkt:
+		</label>
+		<div>*nazwa*</div>
+
+		<label>
+			Aktualna ilość:
+		</label>
+		<div>*6*</div>
+		<div>*szt*</div>
+
+		<label>
+			Kategorie produktu:
+		</label>
+		<div>*kategorie*</div>
+
+		<label>
+			Dane magazynu:
+		</label>
+		<div>*Nazwa*</div>
+		<div>*Lokalizacja*</div>
+
+		<label>
+			Status:
+		</label>
+		<div>*Status*</div>
+
+		<label>
+			Komentarz:
+		</label>
+		<div>*Komentarz*</div>
+
+		<div class="button-group">
+			<button class="close-button" onclick="CloseWindow(7)">Zamknij</button>
+		</div>
+	</div>
+
 	<div class="table-controls">
 		<div class="search-bar">
 			<input type="text" placeholder="Wyszukaj..." class="search-input" />
@@ -228,13 +267,13 @@
 					{
 						<tr>
 							<td>@product.ProductCard?.Name</td>
-							<td>@string.Join(',', @product.ProductCard.Categories?.Select(p => p.Name))</td>
+							<td>@string.Join(", ", @product.ProductCard.Categories?.Select(p => p.Name))</td>
 							<td>@product.Magazine.Name</td>
 							<td>@product.Amount</td>
 							<td>@product.ProductCard?.Unit?.ShortName</td>
 							<td>@product.Status</td>
-							<td>@product.ExpireDate</td>
-							<td><img src="images/info.png" alt="i" class="info-icon" /></td>
+							<td>@product.ExpireDate.ToString("dd.MM.yyyy")</td>
+							<td class="td-info"><button class="info-button" onclick="OpenWindow(7)"><img src="images/info.png" alt="i" class="info-icon" /></button></td>
 						</tr>
 					}}
 			</tbody>
