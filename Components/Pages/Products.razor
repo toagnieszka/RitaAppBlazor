@@ -1,0 +1,302 @@
+﻿@page "/products"
+@using RitaAppBlazor.Data.Models
+@using System.Text.Json
+
+
+<div class="main-container">
+	<div class="przyjmij-container" id="1">
+		<h2>Przyjmij produkt</h2>
+
+		<label>Produkt:</label>
+		<input type="text" id="productName" placeholder="Wpisz nazwę produktu">
+
+		<label>Magazyn:</label>
+		<input type="text" id="warehouseName" placeholder="Wpisz nazwę magazynu">
+
+		<label>Ilość:</label>
+		<div style="display: flex; align-items: center; gap: 10px">
+			<div style="width: 30%; display: flex"><input type="number" id="quantity" min="1" placeholder="Wpisz ilość"></div>
+			<div style="width: 30%; display: flex">szt</div>
+		</div>
+
+		<label>Status:</label>
+		<div class="checkbox-group">
+			<div class="checkbox-active">
+				<input type="radio" name="status" value="active"><label>Dostępny</label>
+			</div>
+			<div class="checkbox-inactive">
+				<input type="radio" name="status" value="inactive"><label>Niedostępny</label>
+			</div>
+		</div>
+
+		<div class="expiry-group">
+			<input @bind="checkedExpiryDate" type="checkbox" id="expiryDateCheck">
+			<label for="expiryDate">Data ważności:</label>
+		</div>
+
+		@if (checkedExpiryDate)
+		{
+			<input type="date" id="expiryDate">
+		}
+		else
+		{
+			<input type="date" id="expiryDate" disabled>
+		}
+
+		<label>Komentarz:</label>
+		<textarea id="comment" placeholder="Dodaj komentarz"></textarea>
+
+		<div class="button-group">
+			<button class="cancel-button" onclick="CloseWindow(1)">Anuluj</button>
+			<button class="save-button" onclick="">Zapisz</button>
+		</div>
+	</div>
+
+	<div class="wydaj-container" id="2">
+		<h2>Wydaj produkt</h2>
+
+		<div style="display: flex; align-items: center; gap: 10px; margin-bottom: 0.5rem">
+			<label>
+				Obecna ilość:
+			</label>
+			<div>6</div>
+			<div>szt</div>
+		</div>
+
+
+		<label>
+			Wydajesz:
+		</label>
+		<div style="display: flex; align-items: center; gap: 10px; margin-bottom:0.5rem">
+			<div style="width: 30%; display: flex"><input type="number" id="quantity" min="1" placeholder="Wpisz ilość"></div>
+			<div style="width: 30%; display: flex">szt</div>
+		</div>
+
+		<div style="display: flex; align-items: center; gap: 10px; margin-bottom: 0.5rem">
+			<label>
+				Ilośc po wydaniu:
+			</label>
+			<div>6</div>
+			<div>szt</div>
+		</div>
+
+		<label>Komentarz:</label>
+		<textarea id="comment" placeholder="Dodaj komentarz"></textarea>
+
+		<div class="button-group">
+			<button class="cancel-button" onclick="CloseWindow(2)">Anuluj</button>
+			<button class="save-button" onclick="">Zapisz</button>
+		</div>
+	</div>
+
+	<div class="wypożycz-container" id="3">
+		<h2>Wypożycz produkt</h2>
+
+		<div style="display: flex; align-items: center; gap: 10px; margin-bottom: 0.5rem">
+			<label>
+				Obecna ilość:
+			</label>
+			<div>6</div>
+			<div>szt</div>
+		</div>
+
+		<label>
+			Wypożyczasz:
+		</label>
+		<div style="display: flex; align-items: center; gap: 10px; margin-bottom:0.5rem">
+			<div style="width: 30%; display: flex"><input type="number" id="quantity" min="1" placeholder="Wpisz ilość"></div>
+			<div style="width: 30%; display: flex">szt</div>
+		</div>
+
+		<div style="display: flex; align-items: center; gap: 10px;">
+			<label>
+				Ilośc po wypożyczeniu:
+			</label>
+			<div>6</div>
+			<div>szt</div>
+		</div>
+
+		<label>Data wypożyczenia:</label>
+		<input type="date" id="loanDate">
+
+		<label>Wypożyczający:</label>
+		<input type="text" id="lender" placeholder="Wpisz osobę, która daje">
+
+		<label>Biorący:</label>
+		<input type="text" id="borrower" placeholder="Wpisz osobę, która bierze">
+
+		<label>Komentarz:</label>
+		<textarea id="comment" placeholder="Dodaj komentarz"></textarea>
+
+		<div class="button-group">
+			<button class="cancel-button" onclick="CloseWindow(3)">Anuluj</button>
+			<button class="save-button" onclick="">Zapisz</button>
+		</div>
+	</div>
+
+	<div class="edytuj-container" id="4">
+		<h2>Edytuj produkt</h2>
+
+		<label>Produkt:</label>
+		<input type="text" id="productName" placeholder="Wpisz nazwę produktu">
+
+		<label>Magazyn:</label>
+		<input type="text" id="warehouseName" placeholder="Wpisz nazwę magazynu">
+
+		<label>Ilość:</label>
+		<div style="display: flex; align-items: center; gap: 10px">
+			<div style="width: 30%; display: flex"><input type="number" id="quantity" min="1" placeholder="Wpisz ilość"></div>
+			<div style="width: 30%; display: flex">szt</div>
+		</div>
+
+		<label>Status:</label>
+		<div class="checkbox-group">
+			<div class="checkbox-active">
+				<input type="radio" name="status" value="active"><label>Dostępny</label>
+			</div>
+			<div class="checkbox-inactive">
+				<input type="radio" name="status" value="inactive"><label>Niedostępny</label>
+			</div>
+		</div>
+
+		<div class="expiry-group">
+			<input @bind="checkedExpiryDate" type="checkbox" id="expiryDateCheck">
+			<label for="expiryDate">Data ważności:</label>
+		</div>
+
+		@if (checkedExpiryDate)
+		{
+			<input type="date" id="expiryDate">
+		}
+		else
+		{
+			<input type="date" id="expiryDate" disabled>
+		}
+
+		<label>Komentarz:</label>
+		<textarea id="comment" placeholder="Dodaj komentarz"></textarea>
+
+		<div class="button-group">
+			<button class="cancel-button" onclick="CloseWindow(4)">Anuluj</button>
+			<button class="save-button" onclick="">Zapisz</button>
+		</div>
+	</div>
+
+	<div class="usuń-container" id="6">
+		<h2>Czy na pewno chcesz usunąć wybrany produkt?</h2>
+
+
+		<div class="button-group">
+			<button class="cancel-button" onclick="CloseWindow(6)">Anuluj</button>
+			<button class="delete-button" onclick="">Usuń</button>
+		</div>
+	</div>
+
+	<div class="table-controls">
+		<div class="search-bar">
+			<input type="text" placeholder="Wyszukaj..." class="search-input" />
+			<button class="search-button">Szukaj</button>
+		</div>
+		<div class="action-buttons">
+			<button class="action-button" onclick="OpenWindow(1)">Przyjmij</button>
+			<button class="action-button" onclick="OpenWindow(2)">Wydaj</button>
+			<button class="action-button" onclick="OpenWindow(3)">Wypożycz</button>
+			<button class="action-button" onclick="OpenWindow(4)">Edytuj</button>
+			<button class="action-button">Filtruj</button>
+			<button class="action-button" onclick="OpenWindow(6)">Usuń</button>
+		</div>
+	</div>
+
+	<div class="table-container">
+		<table class="products-table">
+			<thead>
+				<tr>
+					<th>Nazwa</th>
+					<th>Kategoria</th>
+					<th>Magazyn</th>
+					<th>Ilość</th>
+					<th>Jednostka</th>
+					<th>Dostępność</th>
+					<th>Termin Ważności</th>
+					<th>Szczegóły</th>
+				</tr>
+			</thead>
+			<tbody>
+				@if (products is not null)
+				{
+					@foreach (var product in products)
+					{
+						<tr>
+							<td>@product.ProductCard?.Name</td>
+							<td>@string.Join(',', @product.ProductCard.Categories?.Select(p => p.Name))</td>
+							<td>@product.Magazine.Name</td>
+							<td>@product.Amount</td>
+							<td>@product.ProductCard?.Unit?.ShortName</td>
+							<td>@product.Status</td>
+							<td>@product.ExpireDate</td>
+							<td><img src="images/info.png" alt="i" class="info-icon" /></td>
+						</tr>
+					}}
+			</tbody>
+		</table>
+	</div>
+</div>
+
+
+
+
+@code {
+	private bool checkedExpiryDate { get; set; } = false;
+
+	HttpClient httpClient = new();
+
+	private List<Product>? products;
+	private List<ProductCard> productCards = new();
+
+	protected async override Task OnInitializedAsync()
+	{
+		// Unit unit1 = new();
+		// unit1.Name = "Szt";
+		// unit1.Id = 1;
+
+		// Unit unit2 = new();
+		// unit2.Name = "Kg";
+		// unit2.Id = 2;
+
+		// ProductCard productCard1 = new();
+		// productCard1.Name = "Mąka";
+		// productCard1.Id = 1;
+		// productCard1.UnitId = 2;
+		// productCard1.Unit = unit2;
+
+		// ProductCard productCard2 = new();
+		// productCard2.Name = "Telefon";
+		// productCard2.Id = 2;
+		// productCard2.UnitId = 1;
+		// productCard2.Unit = unit1;
+
+
+		// productCards.Add(productCard1);
+		// productCards.Add(productCard2);
+
+		// Product product1 = new();
+		// product1.ProductCardId = 1;
+		// product1.ProductCard = productCard1;
+
+		// Product product2 = new();
+		// product2.ProductCardId = 2;
+		// product2.ProductCard = productCard2;
+
+		// products.Add(product1);
+		// products.Add(product2);
+
+		var response = await httpClient.GetAsync("http://localhost:5000/api/Products");
+		var tekst = await response.Content.ReadAsStringAsync();
+		products = JsonSerializer.Deserialize<List<Product>>(tekst);
+		StateHasChanged();
+
+		return;
+	}
+
+
+}

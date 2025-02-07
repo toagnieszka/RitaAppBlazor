@@ -1,0 +1,345 @@
+﻿
+.main-container {
+    position: relative;
+}
+
+.przyjmij-container {
+    position: absolute;
+    visibility: hidden;
+    top: 100px;
+    left: 900px;
+    transform: translateX(-50%);
+    border: #007fbf solid 2px;
+    width: 500px;
+    height: 600px;
+    background: #f7fbfd;
+    padding: 20px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+    flex-direction: column;
+    gap: 15px;
+}
+
+    .przyjmij-container h2 {
+        text-align: center;
+        margin-bottom: 10px;
+    }
+
+    .przyjmij-container label {
+        font-weight: bold;
+        margin-top: 5px;
+    }
+
+    .przyjmij-container input,
+    .przyjmij-container textarea {
+        width: 100%;
+        padding: 5px;
+        margin-top: 5px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+    }
+
+.checkbox-group {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+    .checkbox-group label {
+        font-weight: normal;
+    }
+
+.checkbox-active {
+    display: flex;
+    justify-content: left;
+    margin-left: 70px;
+    gap: 10px;
+}
+
+.checkbox-inactive {
+    display: flex;
+    justify-content: right;
+    margin-left: 40px;
+    gap: 10px;
+}
+
+.expiry-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 35%;
+}
+
+    .expiry-group label {
+        min-width: 120px;
+        text-align: left;
+    }
+
+.button-group {
+    display: flex;
+    justify-content: right;
+    margin-top: 10px;
+    gap: 1.2rem;
+}
+
+    .button-group button {
+        padding: 8px 12px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+.cancel-button {
+    background: #ccc;
+}
+
+.save-button {
+    background: #38bdfa;
+    color: white;
+}
+
+.cancel-button:hover {
+    background-color: #b1b1b1;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+}
+
+.save-button:hover {
+    background-color: #00a6ed;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+}
+
+.wydaj-container {
+    position: absolute;
+    visibility: hidden;
+    top: 100px;
+    left: 900px;
+    transform: translateX(-50%);
+    border: #007fbf solid 2px;
+    width: 500px;
+    height: 410px;
+    background: #f7fbfd;
+    padding: 20px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+    flex-direction: column;
+    gap: 15px;
+}
+
+    .wydaj-container h2 {
+        text-align: center;
+        margin-bottom: 10px;
+    }
+
+    .wydaj-container label {
+        font-weight: bold;
+        margin-top: 5px;
+    }
+
+    .wydaj-container input,
+    .wydaj-container textarea {
+        width: 100%;
+        padding: 5px;
+        margin-top: 5px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+    }
+
+.wypożycz-container {
+    position: absolute;
+    visibility: hidden;
+    top: 100px;
+    left: 900px;
+    transform: translateX(-50%);
+    border: #007fbf solid 2px;
+    width: 500px;
+    height: 610px;
+    background: #f7fbfd;
+    padding: 20px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+    flex-direction: column;
+    gap: 15px;
+}
+
+    .wypożycz-container h2 {
+        text-align: center;
+        margin-bottom: 10px;
+    }
+
+    .wypożycz-container label {
+        font-weight: bold;
+        margin-top: 5px;
+    }
+
+    .wypożycz-container input,
+    .wypożycz-container textarea {
+        width: 100%;
+        padding: 5px;
+        margin-top: 5px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+    }
+
+.edytuj-container {
+    position: absolute;
+    visibility: hidden;
+    top: 100px;
+    left: 900px;
+    transform: translateX(-50%);
+    border: #007fbf solid 2px;
+    width: 500px;
+    height: 600px;
+    background: #f7fbfd;
+    padding: 20px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+    flex-direction: column;
+    gap: 15px;
+}
+
+    .edytuj-container h2 {
+        text-align: center;
+        margin-bottom: 10px;
+    }
+
+    .edytuj-container label {
+        font-weight: bold;
+        margin-top: 5px;
+    }
+
+    .edytuj-container input,
+    .edytuj-container textarea {
+        width: 100%;
+        padding: 5px;
+        margin-top: 5px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+    }
+
+.usuń-container {
+    position: absolute;
+    visibility: hidden;
+    top: 250px;
+    left: 950px;
+    transform: translateX(-50%);
+    border: #007fbf solid 2px;
+    width: 500px;
+    height: 230px;
+    background: #f7fbfd;
+    padding: 20px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+}
+
+    .usuń-container h2 {
+        text-align: center;
+        margin-bottom: 55px;
+        margin-top: 10px;
+    }
+
+.delete-button {
+    background: #fc7a6b;
+    color: white;
+}
+
+    .delete-button:hover {
+        background: #c0392b;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+    }
+
+.products-table tr.active-row {
+    background-color: #ffd4cf !important; /* Kolor zaznaczonego wiersza */
+}
+
+.table-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-left: 4rem;
+    margin-right: 4rem;
+    margin-bottom: 1.5rem;
+    padding-top: 60px;
+}
+
+.search-bar {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.search-input {
+    padding: 0.5rem;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    width: 200px;
+}
+
+.search-button {
+    padding: 0.5rem 1rem;
+    background-color: #38bdfa;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+    .search-button:hover {
+        background-color: #0056b3;
+    }
+
+.action-buttons {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.action-button {
+    padding: 0.5rem 1rem;
+    background-color: #38bdfa;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+    .action-button:hover {
+        background-color: #0056b3;
+    }
+
+.table-container {
+    width: 90%;
+    max-width: 4000px;
+    margin: 2rem auto;
+    padding: 1rem;
+}
+
+.products-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 1rem;
+    text-align: left;
+}
+
+    .products-table th,
+    .products-table td {
+        border: 1px solid #ddd;
+        padding: 0.75rem;
+    }
+
+    .products-table th {
+        background-color: #f4f4f4;
+        font-weight: bold;
+    }
+
+    .products-table tr:nth-child(even) {
+        background-color: #f9f9f9;
+    }
+
+    .products-table tr:hover {
+        background-color: #eaeaea;
+        cursor: pointer;
+    }
+
+.info-icon {
+    width: 24px;
+    height: 24px;
+    display: block;
+    margin: 0 auto;
+}
+
+

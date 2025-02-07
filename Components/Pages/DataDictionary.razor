@@ -1,0 +1,263 @@
+﻿@page "/DataDictionary"
+
+<div class="tabs-container">
+    <!-- Lewa część: Zakładki -->
+    <div class="tabs">
+        <div class="tab active" data-content="magazyn">Magazyn</div>
+        <div class="tab" data-content="jednostka">Jednostka</div>
+        <div class="tab" data-content="kategoria">Kategoria</div>
+        <div class="tab" data-content="karta-produktu">Karta Produktu</div>
+    </div>
+
+    <!-- Prawa część: Przyciski akcji -->
+    <div class="actions">
+        <button class="action-button">Dodaj</button>
+        <button class="action-button">Edytuj</button>
+        <button class="action-button">Usuń</button>
+    </div>
+</div>
+
+<!-- Główna treść sekcji -->
+<div class="content-container">
+    <div id="magazyn" class="content active">
+        <div class="table-container">
+            <table class="dataDictionary-table">
+                <thead>
+                    <tr>
+                        <th>Nazwa</th>
+                        <th>Lokalizacja</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Szafa 2</td>
+                        <td>Salki</td>
+                    </tr>
+                    <tr>
+                        <td>Pokój 3</td>
+                        <td>Szpital</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+    <div id="jednostka" class="content">
+        <div class="table-container">
+            <table class="dataDictionary-table">
+                <thead>
+                    <tr>
+                        <th>Nazwa</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Gramy</td>
+                    </tr>
+                    <tr>
+                        <td>Sztuki</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div id="kategoria" class="content">
+    <div class="table-container">
+        <table class="dataDictionary-table">
+            <thead>
+                <tr>
+                    <th>Nazwa</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Elektronika</td>
+                </tr>
+                <tr>
+                    <td>Artykuły spożywcze</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    </div>
+
+    <div id="karta-produktu" class="content">
+    <div class="table-container">
+        <table class="dataDictionary-table">
+            <thead>
+                <tr>
+                    <th>Nazwa</th>
+                    <th>Kategoria</th>
+                    <th>Jednostka</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Słuchawki</td>
+                    <td>Elektronika</td>
+                    <td>Sztuki</td>
+                </tr>
+                <tr>
+                    <td>Kisiel</td>
+                    <td>Artykuły Spożywcze</td>
+                    <td>Sztuki</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    </div>
+
+
+<style>
+    /* Kontener na zakładki i przyciski */
+    .tabs-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 4rem 4rem;
+    }
+
+    /* Sekcja zakładek */
+    .tabs {
+        display: flex;
+        gap: 0.5rem;
+        border-bottom: 2px solid #fc7a6b;
+    }
+
+    .tab {
+        padding: 0.75rem 1rem;
+        cursor: pointer;
+        transition: 0.3s;
+        position: relative;
+        font-weight: bold;
+        color: black;
+    }
+
+        /* Aktywna zakładka */
+        .tab.active {
+            background: #ffeeec;
+            border-radius: 8px 8px 0 0;
+        }
+
+    /* Przyciski akcji */
+    .actions {
+        display: flex;
+        gap: 0.5rem;
+    }
+
+    .action-button {
+        padding: 0.5rem 1rem;
+        background-color: #38bdfa;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+        .action-button:hover {
+            background-color: #0056b3;
+        }
+
+    /* Treść zakładek */
+    .content-container {
+        padding: 1rem;
+    }
+
+    .content {
+        display: none;
+    }
+
+        .content.active {
+            display: block;
+        }
+
+    .dataDictionary-table tr.active-row {
+        background-color: #ffd4cf !important; /* Kolor zaznaczonego wiersza */
+    }
+
+    .table-controls {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-left: 4rem;
+        margin-right: 4rem;
+        margin-bottom: 1.5rem;
+        padding-top: 60px;
+    }
+
+    .table-container {
+        width: 90%;
+        max-width: 4000px;
+        margin: 2rem auto;
+        padding: 1rem;
+    }
+
+    .dataDictionary-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 1rem;
+        text-align: left;
+    }
+
+        .dataDictionary-table th,
+        .dataDictionary-table td {
+            border: 1px solid #ddd;
+            padding: 0.75rem;
+        }
+
+        .dataDictionary-table th {
+            background-color: #f4f4f4;
+            font-weight: bold;
+        }
+
+        .dataDictionary-table tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        .dataDictionary-table tr:hover {
+            background-color: #eaeaea;
+            cursor: pointer;
+        }
+</style>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const tabs = document.querySelectorAll(".tab");
+        const contents = document.querySelectorAll(".content");
+
+        tabs.forEach(tab => {
+            tab.addEventListener("click", function () {
+                // Dezaktywuj wszystkie zakładki i ukryj treści
+                tabs.forEach(t => t.classList.remove("active"));
+                contents.forEach(c => c.classList.remove("active"));
+
+                // Aktywuj klikniętą zakładkę
+                this.classList.add("active");
+
+                // Pokaż odpowiednią treść
+                const contentId = this.getAttribute("data-content");
+                document.getElementById(contentId).classList.add("active");
+            });
+        });
+    });
+
+    document.addEventListener("DOMContentLoaded", function () {
+        const rows = document.querySelectorAll(".dataDictionary-table tbody tr");
+
+        rows.forEach(row => {
+            row.addEventListener("click", () => {
+                // Usuń klasę "active-row" z wszystkich wierszy
+                rows.forEach(r => r.classList.remove("active-row"));
+
+                // Dodaj klasę "active-row" do klikniętego wiersza
+                row.classList.add("active-row");
+            });
+        });
+    });
+</script>
+
+@code {
+
+}
