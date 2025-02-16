@@ -5,11 +5,11 @@ namespace RitaAppBlazor.Data.Models
     public class Product : ModelBase
     {
 		[JsonPropertyName("productCard")]
-		public ProductCard ProductCard { get; set; }
+		public ProductCard ProductCard { get; set; } = new();
 		[JsonPropertyName("productCardId")]
 		public int ProductCardId { get; set; }
 		[JsonPropertyName("magazine")]
-		public Magazine Magazine { get; set; }
+		public Magazine Magazine { get; set; } = new();
 		[JsonPropertyName("magazineId")]
 		public int MagazineId { get; set; }
 		[JsonPropertyName("amount")]
@@ -19,12 +19,12 @@ namespace RitaAppBlazor.Data.Models
 		[JsonPropertyName("expireDate")]
 		public DateTime ExpireDate { get; set; }
 		[JsonPropertyName("comment")]
-		public string Comment { get; set; }
+		public string Comment { get; set; } = "";
 		[JsonPropertyName("loanDate")]
 		public DateTime LoanDate { get; set; }
 		[JsonPropertyName("lender")]
-		public string Lender { get; set; }
+		public string Lender { get; set; } = "";
 		[JsonPropertyName("borrower")]
-		public string Borrower { get; set; }
+		public string Borrower { get; set; } = "";
     }
 }

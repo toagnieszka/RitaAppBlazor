@@ -1,7 +1,7 @@
 ﻿
 .main-container {
     position: relative;
-    width: 100vw; 
+    width: 100vw;
     height: 100vh;
 }
 
@@ -98,6 +98,7 @@
     background: #38bdfa;
     color: white;
 }
+
 .close-button {
     background: #38bdfa;
     color: white;
@@ -112,6 +113,7 @@
     background-color: #00a6ed;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
 }
+
 .close-button:hover {
     background-color: #00a6ed;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
@@ -224,7 +226,7 @@
 
 .usuń-container {
     position: absolute;
-    visibility: hidden;
+/*    visibility: hidden;*/
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
@@ -356,9 +358,9 @@
 
 .products-table {
     width: 100%;
-    border-collapse: collapse;
     font-size: 1rem;
     text-align: left;
+    border-collapse: collapse;
 }
 
     .products-table th,
@@ -381,6 +383,15 @@
         cursor: pointer;
     }
 
+    .products-table tr.active-row {
+        background-color: #ffd4cf !important;
+    }
+
+        .products-table tr.active-row td,
+        .products-table tr.active-row th {
+            border: 1px solid #d3d3d3 !important; /* Czarna ramka dla każdej komórki */
+        }
+
 .info-icon {
     width: 24px;
     height: 24px;
@@ -388,7 +399,7 @@
     margin: 0 auto;
 }
 
-.info-button{
+.info-button {
     border: hidden;
     background: none;
     display: flex;
@@ -397,8 +408,36 @@
     padding: 0;
 }
 
-.td-info{
+.td-info {
     padding: 0;
 }
 
+.suggestions {
+    position: absolute; /* Unosi nad innymi elementami */
+    background: white;
+    border: 1px solid #ccc;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    width: 92%;
+    max-height: 200px;
+    overflow-y: auto;
+    z-index: 1000; /* Zapewnia, że będzie nad innymi elementami */
+}
 
+    .suggestions li {
+        padding: 8px;
+        cursor: pointer;
+    }
+
+        .suggestions li:hover {
+            background: #f0f0f0;
+        }
+
+.set-hidden {
+    visibility: hidden;
+}
+
+.set-visible {
+    visibility: visible;
+}

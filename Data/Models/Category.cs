@@ -4,7 +4,7 @@ namespace RitaAppBlazor.Data.Models
 {
     public class Category : ModelBase
     {
-		[JsonPropertyName("name")]
-		public string Name { get; set; }
+        [JsonPropertyName("name")]
+        public string Name { get; set; } = "";
     }
 }

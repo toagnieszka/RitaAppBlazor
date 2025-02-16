@@ -1,10 +1,13 @@
 ﻿@page "/products"
+@using Newtonsoft.Json
 @using RitaAppBlazor.Data.Models
 @using System.Text.Json
+@using RitaAppBlazor.Data
+@inject IJSRuntime JS
 
 
 <div class="main-container">
-	<div class="przyjmij-container" id="1">
+	<div class="przyjmij-container @(windowId == 1 ? "set-visible" : "set-hidden" )">
 		<h2>Przyjmij produkt</h2>
 
 		<label>Produkt:</label>
@@ -52,7 +55,7 @@
 		</div>
 	</div>
 
-	<div class="wydaj-container" id="2">
+	<div class="wydaj-container @(windowId == 2 ? "set-visible" : "set-hidden" )">
 		<h2>Wydaj produkt</h2>
 
 		<div style="display: flex; align-items: center; gap: 10px; margin-bottom: 0.5rem">
@@ -89,7 +92,7 @@
 		</div>
 	</div>
 
-	<div class="wypożycz-container" id="3">
+	<div class="wypożycz-container @(windowId == 3 ? "set-visible" : "set-hidden" )">
 		<h2>Wypożycz produkt</h2>
 
 		<div style="display: flex; align-items: center; gap: 10px; margin-bottom: 0.5rem">
@@ -134,55 +137,69 @@
 		</div>
 	</div>
 
-	<div class="edytuj-container" id="4">
+	<div class="edytuj-container @(windowId == 4 ? "set-visible" : "set-hidden" )">
 		<h2>Edytuj produkt</h2>
 
-		<label>Produkt:</label>
-		<input type="text" id="productName" placeholder="Wpisz nazwę produktu">
-
-		<label>Magazyn:</label>
-		<input type="text" id="warehouseName" placeholder="Wpisz nazwę magazynu">
-
-		<label>Ilość:</label>
-		<div style="display: flex; align-items: center; gap: 10px">
-			<div style="width: 30%; display: flex"><input type="number" id="quantity" min="1" placeholder="Wpisz ilość"></div>
-			<div style="width: 30%; display: flex">szt</div>
-		</div>
-
-		<label>Status:</label>
-		<div class="checkbox-group">
-			<div class="checkbox-active">
-				<input type="radio" name="status" value="active"><label>Dostępny</label>
-			</div>
-			<div class="checkbox-inactive">
-				<input type="radio" name="status" value="inactive"><label>Niedostępny</label>
-			</div>
-		</div>
-
-		<div class="expiry-group">
-			<input @bind="checkedExpiryDate" type="checkbox" id="expiryDateCheck">
-			<label for="expiryDate">Data ważności:</label>
-		</div>
-
-		@if (checkedExpiryDate)
+		@if (tempProduct is not null)
 		{
-			<input type="date" id="expiryDate">
-		}
-		else
-		{
-			<input type="date" id="expiryDate" disabled>
-		}
+			<EditForm Model="@tempProduct" OnValidSubmit="UpdateProduct">
+				<label>Produkt:</label>
+				<div>@tempProduct.ProductCard.Name</div>
 
-		<label>Komentarz:</label>
-		<textarea id="comment" placeholder="Dodaj komentarz"></textarea>
+				<label>Magazyn:</label>
+				<input type="text" id="warehouseName" placeholder="Wpisz nazwę magazynu" @bind="searchText = tempProduct.Magazine.Name" @oninput="OnSearchChanged">
+				@if (showSuggestions && filteredMagazines.Any())
+				{
+					<ul class="suggestions">
+						@foreach (var magazine in filteredMagazines)
+						{
+							<li @onclick="() => SelectMagazine(magazine)">@magazine.Name</li>
+						}
+					</ul>
+				}
 
-		<div class="button-group">
-			<button class="cancel-button" onclick="CloseWindow(4)">Anuluj</button>
-			<button class="save-button" onclick="">Zapisz</button>
-		</div>
+				<label>Ilość:</label>
+				<div style="display: flex; align-items: center; gap: 10px">
+					<div style="width: 30%; display: flex"><input type="number" id="quantity" min="1" placeholder="Wpisz ilość" @bind="tempProduct.Amount"></div>
+					<div style="width: 30%; display: flex">@tempProduct.ProductCard.Unit.ShortName</div>
+				</div>
+
+				@* <label>Status:</label>
+				<div class="checkbox-group">
+					<div class="checkbox-active">
+						<input type="radio" name="status" checked="@(tempProduct.Status == Status.Dostępny)"/><label>Dostępny</label>
+					</div>
+					<div class="checkbox-inactive">
+						<input type="radio" name="status" checked="@(tempProduct.Status == Status.Niedostępny)" /><label>Niedostępny</label>
+					</div>
+				</div> *@
+
+				<div class="expiry-group">
+					<input type="checkbox" id="expiryDateCheck" checked="@(tempProduct.ExpireDate > DateTime.MinValue)" @onchange="ClearExpireDate">
+					<label for="expiryDate">Data ważności:</label>
+				</div> 
+
+				@if (tempProduct.ExpireDate > DateTime.MinValue)
+				{
+					<input type="date" id="expiryDate" @bind-value="tempProduct.ExpireDate" @bind-value:format="yyyy-MM-dd">
+				}
+				else
+				{
+					<input type="text" id="expiryDate" disabled value="N/D">
+				}
+
+				<label>Komentarz:</label>
+				<textarea id="comment" placeholder="Dodaj komentarz" @bind="tempProduct.Comment"></textarea>
+
+				<div class="button-group">
+					<button class="cancel-button" @onclick="()=>CloseWindow(10)">Anuluj</button>
+					<button class="save-button" type="submit">Zapisz</button>
+				</div>
+			</EditForm>
+		}
 	</div>
 
-	<div class="usuń-container" id="6">
+	<div class="usuń-container @(windowId == 6 ? "set-visible" : "set-hidden")">
 		<h2>Czy na pewno chcesz usunąć wybrany produkt?</h2>
 
 
@@ -192,43 +209,46 @@
 		</div>
 	</div>
 
-	<div class="details-container" id="7">
+	<div class="details-container @(windowId == 7 ? "set-visible" : "set-hidden" )">
 		<h2>Szczegóły</h2>
-		<label>
-			Produkt:
-		</label>
-		<div>*nazwa*</div>
+		@if (currentProduct is not null)
+		{
+			<label>
+				Produkt:
+			</label>
+			<div>@currentProduct.ProductCard.Name</div>
 
-		<label>
-			Aktualna ilość:
-		</label>
-		<div>*6*</div>
-		<div>*szt*</div>
+			<label>
+				Aktualna ilość:
+			</label>
+			<div>@currentProduct.Amount</div>
+			<div>@currentProduct.ProductCard.Unit.Name (@currentProduct.ProductCard.Unit.ShortName)</div>
 
-		<label>
-			Kategorie produktu:
-		</label>
-		<div>*kategorie*</div>
+			<label>
+				Kategorie produktu:
+			</label>
+			<div>@string.Join(", ", @currentProduct.ProductCard.Categories?.Select(p => p.Name))</div>
 
-		<label>
-			Dane magazynu:
-		</label>
-		<div>*Nazwa*</div>
-		<div>*Lokalizacja*</div>
+			<label>
+				Dane magazynu:
+			</label>
+			<div>@currentProduct.Magazine.Name</div>
+			<div>@currentProduct.Magazine.Location</div>
 
-		<label>
-			Status:
-		</label>
-		<div>*Status*</div>
+			<label>
+				Status:
+			</label>
+			<div>@currentProduct.Status</div>
 
-		<label>
-			Komentarz:
-		</label>
-		<div>*Komentarz*</div>
+			<label>
+				Komentarz:
+			</label>
+			<div>@currentProduct.Comment</div>
 
-		<div class="button-group">
-			<button class="close-button" onclick="CloseWindow(7)">Zamknij</button>
-		</div>
+			<div class="button-group">
+				<button class="close-button" onclick="CloseWindow(7)">Zamknij</button>
+			</div>
+		}
 	</div>
 
 	<div class="table-controls">
@@ -237,12 +257,12 @@
 			<button class="search-button">Szukaj</button>
 		</div>
 		<div class="action-buttons">
-			<button class="action-button" onclick="OpenWindow(1)">Przyjmij</button>
-			<button class="action-button" onclick="OpenWindow(2)">Wydaj</button>
-			<button class="action-button" onclick="OpenWindow(3)">Wypożycz</button>
-			<button class="action-button" onclick="OpenWindow(4)">Edytuj</button>
+			<button class="action-button" @onclick="()=>OpenWindow(1)">Przyjmij</button>
+			<button class="action-button" @onclick="()=>OpenWindow(2)">Wydaj</button>
+			<button class="action-button" @onclick="()=>OpenWindow(3)">Wypożycz</button>
+			<button class="action-button" @onclick="()=>OpenWindow(4)">Edytuj</button>
 			<button class="action-button">Filtruj</button>
-			<button class="action-button" onclick="OpenWindow(6)">Usuń</button>
+			<button class="action-button" @onclick="()=>OpenWindow(6)">Usuń</button>
 		</div>
 	</div>
 
@@ -251,7 +271,7 @@
 			<thead>
 				<tr>
 					<th>Nazwa</th>
-					<th>Kategoria</th>
+					<th>Kategorie</th>
 					<th>Magazyn</th>
 					<th>Ilość</th>
 					<th>Jednostka</th>
@@ -265,7 +285,7 @@
 				{
 					@foreach (var product in products)
 					{
-						<tr>
+						<tr id="@product.Id" @onclick="()=>SetCurrentProduct(product)">
 							<td>@product.ProductCard?.Name</td>
 							<td>@string.Join(", ", @product.ProductCard.Categories?.Select(p => p.Name))</td>
 							<td>@product.Magazine.Name</td>
@@ -273,7 +293,7 @@
 							<td>@product.ProductCard?.Unit?.ShortName</td>
 							<td>@product.Status</td>
 							<td>@product.ExpireDate.ToString("dd.MM.yyyy")</td>
-							<td class="td-info"><button class="info-button" onclick="OpenWindow(7)"><img src="images/info.png" alt="i" class="info-icon" /></button></td>
+							<td class="td-info"><button class="info-button" @onclick="()=>OpenWindow(7)"><img src="images/info.png" alt="i" class="info-icon" /></button></td>
 						</tr>
 					}}
 			</tbody>
@@ -286,56 +306,144 @@
 
 @code {
 	private bool checkedExpiryDate { get; set; } = false;
+	private Product currentProduct;
+	private Product tempProduct = new();
+	private bool isSaved = false;
+	private string searchText;
+	private string magazineInput;
+	private bool showSuggestions = true;
+	private int windowId = 0;
 
 	HttpClient httpClient = new();
 
 	private List<Product>? products;
 	private List<ProductCard> productCards = new();
+	private List<Magazine>? allMagazines = new();
+	private List<Magazine> filteredMagazines = new();
 
 	protected async override Task OnInitializedAsync()
 	{
-		// Unit unit1 = new();
-		// unit1.Name = "Szt";
-		// unit1.Id = 1;
+		var productResponse = await httpClient.GetAsync("http://localhost:5000/api/Products");
+		var magazineResponse = await httpClient.GetAsync("http://localhost:5000/api/Magazines");
 
-		// Unit unit2 = new();
-		// unit2.Name = "Kg";
-		// unit2.Id = 2;
+		if (productResponse.IsSuccessStatusCode)
+		{
+			var productText = await productResponse.Content.ReadAsStringAsync();
+			products = System.Text.Json.JsonSerializer.Deserialize<List<Product>>(productText);
+		}
 
-		// ProductCard productCard1 = new();
-		// productCard1.Name = "Mąka";
-		// productCard1.Id = 1;
-		// productCard1.UnitId = 2;
-		// productCard1.Unit = unit2;
-
-		// ProductCard productCard2 = new();
-		// productCard2.Name = "Telefon";
-		// productCard2.Id = 2;
-		// productCard2.UnitId = 1;
-		// productCard2.Unit = unit1;
-
-
-		// productCards.Add(productCard1);
-		// productCards.Add(productCard2);
-
-		// Product product1 = new();
-		// product1.ProductCardId = 1;
-		// product1.ProductCard = productCard1;
-
-		// Product product2 = new();
-		// product2.ProductCardId = 2;
-		// product2.ProductCard = productCard2;
-
-		// products.Add(product1);
-		// products.Add(product2);
-
-		var response = await httpClient.GetAsync("http://localhost:5000/api/Products");
-		var tekst = await response.Content.ReadAsStringAsync();
-		products = JsonSerializer.Deserialize<List<Product>>(tekst);
+		if (magazineResponse.IsSuccessStatusCode)
+		{
+			var magazineText = await magazineResponse.Content.ReadAsStringAsync();
+			allMagazines = System.Text.Json.JsonSerializer.Deserialize<List<Magazine>>(magazineText);
+		}
 		StateHasChanged();
 
 		return;
 	}
 
 
+	protected async Task UpdateProduct()
+	{
+		var json = JsonConvert.SerializeObject(tempProduct);
+		var data = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
+		var response = await httpClient.PutAsync("http://localhost:5000/api/Products/{tempProduct.Id}", data);
+		if (response.IsSuccessStatusCode)
+		{
+			CloseWindow(10);
+		}
+		else
+		{
+			var errorMessage = await response.Content.ReadAsStringAsync();
+			Console.WriteLine($"Błąd: {errorMessage}");
+		}
+		StateHasChanged();
+	}
+
+	private void SetCurrentProduct(Product product)
+	{
+		currentProduct = product;
+	}
+
+	private void EditProduct(Product product)
+	{
+		tempProduct = new();
+		tempProduct.Id = currentProduct.Id;
+		tempProduct.Magazine = new Magazine();
+		tempProduct.Magazine.Name = currentProduct.Magazine.Name;
+		tempProduct.Amount = currentProduct.Amount;
+		tempProduct.ProductCard = new ProductCard();
+		tempProduct.ProductCard.Name = currentProduct.ProductCard.Name;
+		tempProduct.ProductCard.Unit.ShortName = currentProduct.ProductCard.Unit.ShortName;
+		tempProduct.Status = currentProduct.Status;
+		tempProduct.ExpireDate = currentProduct.ExpireDate;
+		tempProduct.Comment = currentProduct.Comment;
+	}
+
+	private void ClearExpireDate(ChangeEventArgs e)
+	{
+		if (!(bool)e.Value)
+		{
+			tempProduct.ExpireDate = DateTime.MinValue;
+		}
+		else
+		{
+			tempProduct.ExpireDate = DateTime.Now;
+		}
+	}
+
+	private void HandleValidSubmit()
+	{
+		isSaved = true;
+		Console.WriteLine($"Zapisano produkt: {currentProduct.ProductCard}, {currentProduct.Magazine} zł, Data: {currentProduct.ExpireDate}, Status: {currentProduct.Status}");
+	}
+
+	private void OnSearchChanged(ChangeEventArgs e)
+	{
+		searchText = e.Value.ToString();
+
+		if (string.IsNullOrWhiteSpace(searchText))
+		{
+			// Ukryj sugestie, jeśli pole jest puste
+			showSuggestions = false;
+			filteredMagazines.Clear();
+		}
+		else
+		{
+			// Pokazuj sugestie, gdy tekst jest wpisany
+			showSuggestions = true;
+			filteredMagazines = allMagazines
+				.Where(m => m.Name.Contains(searchText, StringComparison.OrdinalIgnoreCase))
+				.ToList();
+		}
+
+		StateHasChanged();
+	}
+
+	private void SelectMagazine(Magazine magazine)
+	{
+		tempProduct.Magazine = magazine;
+		searchText = magazine.Name;
+		filteredMagazines.Clear();
+		showSuggestions = false;
+	}
+
+	private void OpenWindow(int id)
+	{
+		if (id == 4)
+		{
+			EditProduct(currentProduct);
+			windowId = id;
+		}
+		else
+		{
+			windowId = id;
+		}
+	}
+
+	private void CloseWindow(int id)
+	{
+			windowId = id;
+	}
 }
+	

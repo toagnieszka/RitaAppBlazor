@@ -5,8 +5,8 @@ namespace RitaAppBlazor.Data.Models
     public class Magazine : ModelBase
     {
 		[JsonPropertyName("name")]
-		public string Name { get; set; }
+		public string Name { get; set; } = "";
 		[JsonPropertyName("location")]
-		public string Location { get; set; }
+		public string Location { get; set; } = "";
     }
 }
