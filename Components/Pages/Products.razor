@@ -3,7 +3,6 @@
 @using RitaAppBlazor.Data.Models
 @using System.Text.Json
 @using RitaAppBlazor.Data
-@inject IJSRuntime JS
 
 
 <div class="main-container">
@@ -142,7 +141,7 @@
 
 		@if (tempProduct is not null)
 		{
-			<EditForm Model="@tempProduct" OnValidSubmit="UpdateProduct">
+			<EditForm Model="@tempProduct" OnValidSubmit="HandleValidSubmit">
 				<label>Produkt:</label>
 				<div>@tempProduct.ProductCard.Name</div>
 
@@ -164,20 +163,20 @@
 					<div style="width: 30%; display: flex">@tempProduct.ProductCard.Unit.ShortName</div>
 				</div>
 
-				@* <label>Status:</label>
-				<div class="checkbox-group">
-					<div class="checkbox-active">
-						<input type="radio" name="status" checked="@(tempProduct.Status == Status.Dostępny)"/><label>Dostępny</label>
-					</div>
-					<div class="checkbox-inactive">
-						<input type="radio" name="status" checked="@(tempProduct.Status == Status.Niedostępny)" /><label>Niedostępny</label>
-					</div>
-				</div> *@
+				  <label>Status:</label>
+				 <div class="checkbox-group">
+				 	<div class="checkbox-active">
+						<input type="radio" name="status" checked="@(tempProduct.Status == Status.Dostępny)" @onchange="() => tempProduct.Status = Status.Dostępny" /><label>Dostępny</label>
+				 	</div>
+				 	<div class="checkbox-inactive">
+						<input type="radio" name="status" checked="@(tempProduct.Status == Status.Niedostępny)" @onchange="() => tempProduct.Status = Status.Niedostępny" /><label>Niedostępny</label>
+				 	</div>
+				 </div> 
 
 				<div class="expiry-group">
 					<input type="checkbox" id="expiryDateCheck" checked="@(tempProduct.ExpireDate > DateTime.MinValue)" @onchange="ClearExpireDate">
 					<label for="expiryDate">Data ważności:</label>
-				</div> 
+				</div>
 
 				@if (tempProduct.ExpireDate > DateTime.MinValue)
 				{
@@ -193,7 +192,7 @@
 
 				<div class="button-group">
 					<button class="cancel-button" @onclick="()=>CloseWindow(10)">Anuluj</button>
-					<button class="save-button" type="submit">Zapisz</button>
+					<button class="save-button" @onclick="()=>UpdateProduct(tempProduct)">Zapisz</button>
 				</div>
 			</EditForm>
 		}
@@ -292,7 +291,16 @@
 							<td>@product.Amount</td>
 							<td>@product.ProductCard?.Unit?.ShortName</td>
 							<td>@product.Status</td>
-							<td>@product.ExpireDate.ToString("dd.MM.yyyy")</td>
+							<td>
+								@if (@product.ExpireDate > DateTime.MinValue)
+								{
+									@product.ExpireDate.ToString("dd.MM.yyyy")
+								}
+								else
+								{
+									@productWithoutExpireDate
+								}
+							</td>
 							<td class="td-info"><button class="info-button" @onclick="()=>OpenWindow(7)"><img src="images/info.png" alt="i" class="info-icon" /></button></td>
 						</tr>
 					}}
@@ -313,6 +321,7 @@
 	private string magazineInput;
 	private bool showSuggestions = true;
 	private int windowId = 0;
+	private string productWithoutExpireDate = "N/D";
 
 	HttpClient httpClient = new();
 
@@ -343,21 +352,22 @@
 	}
 
 
-	protected async Task UpdateProduct()
+	protected async Task UpdateProduct(Product product)
 	{
-		var json = JsonConvert.SerializeObject(tempProduct);
+		var json = JsonConvert.SerializeObject(product);
 		var data = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
-		var response = await httpClient.PutAsync("http://localhost:5000/api/Products/{tempProduct.Id}", data);
+		var response = await httpClient.PutAsync("http://localhost:5000/api/Products", data);
 		if (response.IsSuccessStatusCode)
 		{
 			CloseWindow(10);
+			StateHasChanged();
 		}
 		else
 		{
 			var errorMessage = await response.Content.ReadAsStringAsync();
 			Console.WriteLine($"Błąd: {errorMessage}");
 		}
-		StateHasChanged();
+
 	}
 
 	private void SetCurrentProduct(Product product)
@@ -367,17 +377,42 @@
 
 	private void EditProduct(Product product)
 	{
-		tempProduct = new();
-		tempProduct.Id = currentProduct.Id;
-		tempProduct.Magazine = new Magazine();
-		tempProduct.Magazine.Name = currentProduct.Magazine.Name;
-		tempProduct.Amount = currentProduct.Amount;
-		tempProduct.ProductCard = new ProductCard();
-		tempProduct.ProductCard.Name = currentProduct.ProductCard.Name;
-		tempProduct.ProductCard.Unit.ShortName = currentProduct.ProductCard.Unit.ShortName;
-		tempProduct.Status = currentProduct.Status;
-		tempProduct.ExpireDate = currentProduct.ExpireDate;
-		tempProduct.Comment = currentProduct.Comment;
+		tempProduct = new Product
+			{
+				Id = currentProduct.Id,
+				CreatedDate = currentProduct.CreatedDate,
+				Magazine = new Magazine
+				{
+					Id = currentProduct.Magazine.Id,
+					Name = currentProduct.Magazine.Name,
+					Location = currentProduct.Magazine.Location
+				},
+				MagazineId = currentProduct.MagazineId,
+				Amount = currentProduct.Amount,
+				ProductCard = new ProductCard
+				{
+					Id = currentProduct.ProductCard.Id,
+					Name = currentProduct.ProductCard.Name,
+					CategoryId = currentProduct.ProductCard.CategoryId,
+					Categories = currentProduct.ProductCard.Categories
+					.Select(c => new Category { Id = c.Id, Name = c.Name })
+					.ToList(),
+					Unit = new Unit
+					{
+						Id = currentProduct.ProductCard.Unit.Id,
+						Name = currentProduct.ProductCard.Unit.Name,
+						ShortName = currentProduct.ProductCard.Unit.ShortName
+					},
+					UnitId = currentProduct.ProductCard.UnitId
+				},
+				ProductCardId = currentProduct.ProductCardId,
+				Status = currentProduct.Status,
+				ExpireDate = currentProduct.ExpireDate,
+				Comment = currentProduct.Comment,
+				LoanDate = currentProduct.LoanDate,
+				Lender = currentProduct.Lender,
+				Borrower = currentProduct.Borrower
+			};
 	}
 
 	private void ClearExpireDate(ChangeEventArgs e)
@@ -424,6 +459,7 @@
 	{
 		tempProduct.Magazine = magazine;
 		searchText = magazine.Name;
+		tempProduct.MagazineId = magazine.Id;
 		filteredMagazines.Clear();
 		showSuggestions = false;
 	}
