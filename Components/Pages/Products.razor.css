@@ -244,6 +244,25 @@
         margin-top: 10px;
     }
 
+.nullProduct-container {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border: #007fbf solid 2px;
+    width: 500px;
+    height: 230px;
+    background: #f7fbfd;
+    padding: 20px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+}
+
+    .nullProduct-container h2 {
+        text-align: center;
+        margin-bottom: 55px;
+        margin-top: 10px;
+    }
+
 .details-container {
     position: absolute;
     visibility: hidden;

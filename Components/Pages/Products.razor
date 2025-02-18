@@ -49,7 +49,7 @@
 		<textarea id="comment" placeholder="Dodaj komentarz"></textarea>
 
 		<div class="button-group">
-			<button class="cancel-button" onclick="CloseWindow(1)">Anuluj</button>
+			<button class="cancel-button" @onclick="()=>CloseWindow(10)">Anuluj</button>
 			<button class="save-button" onclick="">Zapisz</button>
 		</div>
 	</div>
@@ -86,7 +86,7 @@
 		<textarea id="comment" placeholder="Dodaj komentarz"></textarea>
 
 		<div class="button-group">
-			<button class="cancel-button" onclick="CloseWindow(2)">Anuluj</button>
+			<button class="cancel-button" @onclick="()=>CloseWindow(10)">Anuluj</button>
 			<button class="save-button" onclick="">Zapisz</button>
 		</div>
 	</div>
@@ -131,7 +131,7 @@
 		<textarea id="comment" placeholder="Dodaj komentarz"></textarea>
 
 		<div class="button-group">
-			<button class="cancel-button" onclick="CloseWindow(3)">Anuluj</button>
+			<button class="cancel-button" @onclick="()=>CloseWindow(10)">Anuluj</button>
 			<button class="save-button" onclick="">Zapisz</button>
 		</div>
 	</div>
@@ -163,15 +163,15 @@
 					<div style="width: 30%; display: flex">@tempProduct.ProductCard.Unit.ShortName</div>
 				</div>
 
-				  <label>Status:</label>
-				 <div class="checkbox-group">
-				 	<div class="checkbox-active">
+				<label>Status:</label>
+				<div class="checkbox-group">
+					<div class="checkbox-active">
 						<input type="radio" name="status" checked="@(tempProduct.Status == Status.Dostępny)" @onchange="() => tempProduct.Status = Status.Dostępny" /><label>Dostępny</label>
-				 	</div>
-				 	<div class="checkbox-inactive">
+					</div>
+					<div class="checkbox-inactive">
 						<input type="radio" name="status" checked="@(tempProduct.Status == Status.Niedostępny)" @onchange="() => tempProduct.Status = Status.Niedostępny" /><label>Niedostępny</label>
-				 	</div>
-				 </div> 
+					</div>
+				</div>
 
 				<div class="expiry-group">
 					<input type="checkbox" id="expiryDateCheck" checked="@(tempProduct.ExpireDate > DateTime.MinValue)" @onchange="ClearExpireDate">
@@ -198,12 +198,21 @@
 		}
 	</div>
 
+	<div class="nullProduct-container @(windowId == 8 ? "set-visible" : "set-hidden" )">
+		<h2>Nie wybrano żadnego produktu.</h2>
+
+
+		<div class="button-group">
+			<button class="cancel-button" @onclick="()=>CloseWindow(10)">Anuluj</button>
+		</div>
+	</div>
+
 	<div class="usuń-container @(windowId == 6 ? "set-visible" : "set-hidden")">
 		<h2>Czy na pewno chcesz usunąć wybrany produkt?</h2>
 
 
 		<div class="button-group">
-			<button class="cancel-button" onclick="CloseWindow(6)">Anuluj</button>
+			<button class="cancel-button" @onclick="()=>CloseWindow(10)">Anuluj</button>
 			<button class="delete-button" onclick="">Usuń</button>
 		</div>
 	</div>
@@ -245,7 +254,7 @@
 			<div>@currentProduct.Comment</div>
 
 			<div class="button-group">
-				<button class="close-button" onclick="CloseWindow(7)">Zamknij</button>
+				<button class="close-button" @onclick="()=>CloseWindow(10)">Zamknij</button>
 			</div>
 		}
 	</div>
@@ -377,42 +386,49 @@
 
 	private void EditProduct(Product product)
 	{
-		tempProduct = new Product
+		if (product is not null)
+		{
+			tempProduct = new Product
 			{
-				Id = currentProduct.Id,
-				CreatedDate = currentProduct.CreatedDate,
-				Magazine = new Magazine
-				{
-					Id = currentProduct.Magazine.Id,
-					Name = currentProduct.Magazine.Name,
-					Location = currentProduct.Magazine.Location
-				},
-				MagazineId = currentProduct.MagazineId,
-				Amount = currentProduct.Amount,
-				ProductCard = new ProductCard
-				{
-					Id = currentProduct.ProductCard.Id,
-					Name = currentProduct.ProductCard.Name,
-					CategoryId = currentProduct.ProductCard.CategoryId,
-					Categories = currentProduct.ProductCard.Categories
-					.Select(c => new Category { Id = c.Id, Name = c.Name })
-					.ToList(),
-					Unit = new Unit
+					Id = currentProduct.Id,
+					CreatedDate = currentProduct.CreatedDate,
+					Magazine = new Magazine
 					{
-						Id = currentProduct.ProductCard.Unit.Id,
-						Name = currentProduct.ProductCard.Unit.Name,
-						ShortName = currentProduct.ProductCard.Unit.ShortName
+						Id = currentProduct.Magazine.Id,
+						Name = currentProduct.Magazine.Name,
+						Location = currentProduct.Magazine.Location
 					},
-					UnitId = currentProduct.ProductCard.UnitId
-				},
-				ProductCardId = currentProduct.ProductCardId,
-				Status = currentProduct.Status,
-				ExpireDate = currentProduct.ExpireDate,
-				Comment = currentProduct.Comment,
-				LoanDate = currentProduct.LoanDate,
-				Lender = currentProduct.Lender,
-				Borrower = currentProduct.Borrower
+					MagazineId = currentProduct.MagazineId,
+					Amount = currentProduct.Amount,
+					ProductCard = new ProductCard
+					{
+						Id = currentProduct.ProductCard.Id,
+						Name = currentProduct.ProductCard.Name,
+						CategoryId = currentProduct.ProductCard.CategoryId,
+						Categories = currentProduct.ProductCard.Categories
+								.Select(c => new Category { Id = c.Id, Name = c.Name })
+								.ToList(),
+						Unit = new Unit
+						{
+							Id = currentProduct.ProductCard.Unit.Id,
+							Name = currentProduct.ProductCard.Unit.Name,
+							ShortName = currentProduct.ProductCard.Unit.ShortName
+						},
+						UnitId = currentProduct.ProductCard.UnitId
+					},
+					ProductCardId = currentProduct.ProductCardId,
+					Status = currentProduct.Status,
+					ExpireDate = currentProduct.ExpireDate,
+					Comment = currentProduct.Comment,
+					LoanDate = currentProduct.LoanDate,
+					Lender = currentProduct.Lender,
+					Borrower = currentProduct.Borrower
 			};
+		}
+		else if(product is null)
+		{
+			OpenWindow(8);
+		}
 	}
 
 	private void ClearExpireDate(ChangeEventArgs e)
@@ -479,7 +495,6 @@
 
 	private void CloseWindow(int id)
 	{
-			windowId = id;
+		windowId = id;
 	}
 }
-	
