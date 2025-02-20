@@ -7,51 +7,76 @@
 
 <div class="main-container">
 	<div class="przyjmij-container @(windowId == 1 ? "set-visible" : "set-hidden" )">
-		<h2>Przyjmij produkt</h2>
-
-		<label>Produkt:</label>
-		<input type="text" id="productName" placeholder="Wpisz nazwę produktu">
-
-		<label>Magazyn:</label>
-		<input type="text" id="warehouseName" placeholder="Wpisz nazwę magazynu">
-
-		<label>Ilość:</label>
-		<div style="display: flex; align-items: center; gap: 10px">
-			<div style="width: 30%; display: flex"><input type="number" id="quantity" min="1" placeholder="Wpisz ilość"></div>
-			<div style="width: 30%; display: flex">szt</div>
-		</div>
-
-		<label>Status:</label>
-		<div class="checkbox-group">
-			<div class="checkbox-active">
-				<input type="radio" name="status" value="active"><label>Dostępny</label>
-			</div>
-			<div class="checkbox-inactive">
-				<input type="radio" name="status" value="inactive"><label>Niedostępny</label>
-			</div>
-		</div>
-
-		<div class="expiry-group">
-			<input @bind="checkedExpiryDate" type="checkbox" id="expiryDateCheck">
-			<label for="expiryDate">Data ważności:</label>
-		</div>
-
-		@if (checkedExpiryDate)
+		@if (tempProduct is not null)
 		{
-			<input type="date" id="expiryDate">
-		}
-		else
-		{
-			<input type="date" id="expiryDate" disabled>
-		}
+			<EditForm Model="@newProduct" OnValidSubmit="HandleValidSubmit">
+				<h2>Przyjmij produkt</h2>
 
-		<label>Komentarz:</label>
-		<textarea id="comment" placeholder="Dodaj komentarz"></textarea>
+				<label>Produkt:</label>
+				<input type="text" id="productName" placeholder="Wpisz nazwę produktu" @bind="searchTextProductCard" @oninput="ProductCardsOnSearchChanged">
+				@if (showProductCardsSuggestions && filteredProductCards.Any())
+				{
+					<ul class="suggestions">
+						@foreach (var productCard in filteredProductCards)
+						{
+							<li @onclick="() => SelectNewProductCard(productCard)">@productCard.Name</li>
+						}
+					</ul>
+				}
 
-		<div class="button-group">
-			<button class="cancel-button" @onclick="()=>CloseWindow(10)">Anuluj</button>
-			<button class="save-button" onclick="">Zapisz</button>
-		</div>
+				<label>Magazyn:</label>
+				<input type="text" id="warehouseName" placeholder="Wpisz nazwę magazynu" @bind="searchText" @oninput="MagazinesOnSearchChanged">
+				@if (showSuggestions && filteredMagazines.Any())
+				{
+					<ul class="suggestions">
+						@foreach (var magazine in filteredMagazines)
+						{
+							<li @onclick="() => SelectNewMagazine(magazine)">@magazine.Name</li>
+						}
+					</ul>
+				}
+
+				<label>Ilość:</label>
+				<div style="display: flex; align-items: center; gap: 10px">
+					<div style="width: 30%; display: flex"><input type="number" id="quantity" min="1" placeholder="Wpisz ilość" @bind="newProduct.Amount"></div>
+					<div style="width: 30%; display: flex">@newProduct.ProductCard.Unit.ShortName</div>
+				</div>
+
+				<label>Status:</label>
+				<div class="checkbox-group">
+					<div class="checkbox-active">
+						<div class="checkbox-active">
+							<input type="radio" name="status" checked="@(newProduct.Status == Status.Dostępny)" @onchange="() => newProduct.Status = Status.Dostępny" /><label>Dostępny</label>
+						</div>
+						<div class="checkbox-inactive">
+							<input type="radio" name="status" @onchange="() => newProduct.Status = Status.Niedostępny" /><label>Niedostępny</label>
+						</div>
+					</div>
+				</div>
+
+				<div class="expiry-group">
+					<input type="checkbox" value="checkedExpiryDate" id="expiryDateCheck" @onchange="ToggleExpiryDateChange">
+					<label for="expiryDate">Data ważności:</label>
+				</div>
+
+				@if (checkedExpiryDate)
+				{
+					<input type="date" id="expiryDate" @bind-value="newProduct.ExpireDate" @bind-value:format="yyyy-MM-dd">
+				}
+				else
+				{
+					<input type="date" id="expiryDate" disabled value="N/D">
+				}
+
+				<label>Komentarz:</label>
+				<textarea id="comment" placeholder="Dodaj komentarz" @bind="newProduct.Comment"></textarea>
+
+				<div class="button-group">
+					<button class="cancel-button" @onclick="()=>CloseWindow(10)">Anuluj</button>
+					<button class="save-button" onclick="">Zapisz</button>
+				</div>
+			</EditForm>
+		}
 	</div>
 
 	<div class="wydaj-container @(windowId == 2 ? "set-visible" : "set-hidden" )">
@@ -146,13 +171,13 @@
 				<div>@tempProduct.ProductCard.Name</div>
 
 				<label>Magazyn:</label>
-				<input type="text" id="warehouseName" placeholder="Wpisz nazwę magazynu" @bind="searchText = tempProduct.Magazine.Name" @oninput="OnSearchChanged">
+				<input type="text" id="warehouseName" placeholder="Wpisz nazwę magazynu" @bind="searchText = tempProduct.Magazine.Name" @oninput="MagazinesOnSearchChanged">
 				@if (showSuggestions && filteredMagazines.Any())
 				{
 					<ul class="suggestions">
 						@foreach (var magazine in filteredMagazines)
 						{
-							<li @onclick="() => SelectMagazine(magazine)">@magazine.Name</li>
+							<li @onclick="() => SelectEditedMagazine(magazine)">@magazine.Name</li>
 						}
 					</ul>
 				}
@@ -325,17 +350,21 @@
 	private bool checkedExpiryDate { get; set; } = false;
 	private Product currentProduct;
 	private Product tempProduct = new();
+	private Product newProduct = new();
 	private bool isSaved = false;
 	private string searchText;
+	private string searchTextProductCard;
 	private string magazineInput;
 	private bool showSuggestions = true;
+	private bool showProductCardsSuggestions = true;
 	private int windowId = 0;
 	private string productWithoutExpireDate = "N/D";
 
 	HttpClient httpClient = new();
 
 	private List<Product>? products;
-	private List<ProductCard> productCards = new();
+	private List<ProductCard>? productCards = new();
+	private List<ProductCard> filteredProductCards = new();
 	private List<Magazine>? allMagazines = new();
 	private List<Magazine> filteredMagazines = new();
 
@@ -343,6 +372,7 @@
 	{
 		var productResponse = await httpClient.GetAsync("http://localhost:5000/api/Products");
 		var magazineResponse = await httpClient.GetAsync("http://localhost:5000/api/Magazines");
+		var productCardResponse = await httpClient.GetAsync("http://localhost:5000/api/ProductCards");
 
 		if (productResponse.IsSuccessStatusCode)
 		{
@@ -354,6 +384,12 @@
 		{
 			var magazineText = await magazineResponse.Content.ReadAsStringAsync();
 			allMagazines = System.Text.Json.JsonSerializer.Deserialize<List<Magazine>>(magazineText);
+		}
+
+		if (productCardResponse.IsSuccessStatusCode)
+		{
+			var productCardText = await productCardResponse.Content.ReadAsStringAsync();
+			productCards = System.Text.Json.JsonSerializer.Deserialize<List<ProductCard>>(productCardText);
 		}
 		StateHasChanged();
 
@@ -389,7 +425,7 @@
 		if (product is not null)
 		{
 			tempProduct = new Product
-			{
+				{
 					Id = currentProduct.Id,
 					CreatedDate = currentProduct.CreatedDate,
 					Magazine = new Magazine
@@ -406,8 +442,8 @@
 						Name = currentProduct.ProductCard.Name,
 						CategoryId = currentProduct.ProductCard.CategoryId,
 						Categories = currentProduct.ProductCard.Categories
-								.Select(c => new Category { Id = c.Id, Name = c.Name })
-								.ToList(),
+										.Select(c => new Category { Id = c.Id, Name = c.Name })
+										.ToList(),
 						Unit = new Unit
 						{
 							Id = currentProduct.ProductCard.Unit.Id,
@@ -423,11 +459,7 @@
 					LoanDate = currentProduct.LoanDate,
 					Lender = currentProduct.Lender,
 					Borrower = currentProduct.Borrower
-			};
-		}
-		else if(product is null)
-		{
-			OpenWindow(8);
+				};
 		}
 	}
 
@@ -443,13 +475,26 @@
 		}
 	}
 
+	private void ToggleExpiryDateChange(ChangeEventArgs e)
+	{
+		checkedExpiryDate = (bool)e.Value;
+		if (checkedExpiryDate)
+		{
+			newProduct.ExpireDate = DateTime.Now;
+		}
+		else
+		{
+			newProduct.ExpireDate = DateTime.MinValue; 
+		}
+	}
+
 	private void HandleValidSubmit()
 	{
 		isSaved = true;
 		Console.WriteLine($"Zapisano produkt: {currentProduct.ProductCard}, {currentProduct.Magazine} zł, Data: {currentProduct.ExpireDate}, Status: {currentProduct.Status}");
 	}
 
-	private void OnSearchChanged(ChangeEventArgs e)
+	private void MagazinesOnSearchChanged(ChangeEventArgs e)
 	{
 		searchText = e.Value.ToString();
 
@@ -471,7 +516,29 @@
 		StateHasChanged();
 	}
 
-	private void SelectMagazine(Magazine magazine)
+	private void ProductCardsOnSearchChanged(ChangeEventArgs e)
+	{
+		searchTextProductCard = e.Value.ToString();
+
+		if (string.IsNullOrWhiteSpace(searchTextProductCard))
+		{
+			// Ukryj sugestie, jeśli pole jest puste
+			showProductCardsSuggestions = false;
+			filteredProductCards.Clear();
+		}
+		else
+		{
+			// Pokazuj sugestie, gdy tekst jest wpisany
+			showProductCardsSuggestions = true;
+			filteredProductCards = productCards
+				.Where(m => m.Name.Contains(searchTextProductCard, StringComparison.OrdinalIgnoreCase))
+				.ToList();
+		}
+
+		StateHasChanged();
+	}
+
+	private void SelectEditedMagazine(Magazine magazine)
 	{
 		tempProduct.Magazine = magazine;
 		searchText = magazine.Name;
@@ -480,12 +547,34 @@
 		showSuggestions = false;
 	}
 
+	private void SelectNewMagazine(Magazine magazine)
+	{
+		newProduct.Magazine = magazine;
+		searchText = magazine.Name;
+		newProduct.MagazineId = magazine.Id;
+		filteredMagazines.Clear();
+		showSuggestions = false;
+	}
+
+	private void SelectNewProductCard(ProductCard productCard)
+	{
+		newProduct.ProductCard = productCard;
+		searchTextProductCard = productCard.Name;
+		newProduct.ProductCardId = productCard.Id;
+		filteredProductCards.Clear();
+		showProductCardsSuggestions = false;
+	}
+
 	private void OpenWindow(int id)
 	{
-		if (id == 4)
+		if (id == 4 && currentProduct is not null)
 		{
 			EditProduct(currentProduct);
 			windowId = id;
+		}
+		else if (id == 4 && currentProduct is null)
+		{
+			windowId = 8;
 		}
 		else
 		{
