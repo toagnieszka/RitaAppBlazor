@@ -7,9 +7,9 @@
 
 <div class="main-container">
 	<div class="przyjmij-container @(windowId == 1 ? "set-visible" : "set-hidden" )">
-		@if (tempProduct is not null)
+		@if (newProduct is not null)
 		{
-			<EditForm Model="@newProduct" OnValidSubmit="HandleValidSubmit">
+			<EditForm Model="@newProduct">
 				<h2>Przyjmij produkt</h2>
 
 				<label>Produkt:</label>
@@ -25,7 +25,7 @@
 				}
 
 				<label>Magazyn:</label>
-				<input type="text" id="warehouseName" placeholder="Wpisz nazwę magazynu" @bind="searchText" @oninput="MagazinesOnSearchChanged">
+				<input type="text" id="warehouseName" placeholder="Wpisz nazwę magazynu" @bind="searchTextNewMagazine" @oninput="NewMagazinesOnSearchChanged">
 				@if (showSuggestions && filteredMagazines.Any())
 				{
 					<ul class="suggestions">
@@ -73,7 +73,7 @@
 
 				<div class="button-group">
 					<button class="cancel-button" @onclick="()=>CloseWindow(10)">Anuluj</button>
-					<button class="save-button" onclick="">Zapisz</button>
+					<button class="save-button" @onclick="()=>CreateProduct(newProduct)">Zapisz</button>
 				</div>
 			</EditForm>
 		}
@@ -166,7 +166,7 @@
 
 		@if (tempProduct is not null)
 		{
-			<EditForm Model="@tempProduct" OnValidSubmit="HandleValidSubmit">
+			<EditForm Model="@tempProduct">
 				<label>Produkt:</label>
 				<div>@tempProduct.ProductCard.Name</div>
 
@@ -351,8 +351,8 @@
 	private Product currentProduct;
 	private Product tempProduct = new();
 	private Product newProduct = new();
-	private bool isSaved = false;
 	private string searchText;
+	private string searchTextNewMagazine;
 	private string searchTextProductCard;
 	private string magazineInput;
 	private bool showSuggestions = true;
@@ -402,6 +402,24 @@
 		var json = JsonConvert.SerializeObject(product);
 		var data = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
 		var response = await httpClient.PutAsync("http://localhost:5000/api/Products", data);
+		if (response.IsSuccessStatusCode)
+		{
+			CloseWindow(10);
+			StateHasChanged();
+		}
+		else
+		{
+			var errorMessage = await response.Content.ReadAsStringAsync();
+			Console.WriteLine($"Błąd: {errorMessage}");
+		}
+
+	}
+
+	protected async Task CreateProduct(Product product)
+	{
+		var json = JsonConvert.SerializeObject(product);
+		var data = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
+		var response = await httpClient.PostAsync("http://localhost:5000/api/Products", data);
 		if (response.IsSuccessStatusCode)
 		{
 			CloseWindow(10);
@@ -488,11 +506,6 @@
 		}
 	}
 
-	private void HandleValidSubmit()
-	{
-		isSaved = true;
-		Console.WriteLine($"Zapisano produkt: {currentProduct.ProductCard}, {currentProduct.Magazine} zł, Data: {currentProduct.ExpireDate}, Status: {currentProduct.Status}");
-	}
 
 	private void MagazinesOnSearchChanged(ChangeEventArgs e)
 	{
@@ -510,6 +523,28 @@
 			showSuggestions = true;
 			filteredMagazines = allMagazines
 				.Where(m => m.Name.Contains(searchText, StringComparison.OrdinalIgnoreCase))
+				.ToList();
+		}
+
+		StateHasChanged();
+	}
+
+	private void NewMagazinesOnSearchChanged(ChangeEventArgs e)
+	{
+		searchTextNewMagazine = e.Value.ToString();
+
+		if (string.IsNullOrWhiteSpace(searchTextNewMagazine))
+		{
+			// Ukryj sugestie, jeśli pole jest puste
+			showSuggestions = false;
+			filteredMagazines.Clear();
+		}
+		else
+		{
+			// Pokazuj sugestie, gdy tekst jest wpisany
+			showSuggestions = true;
+			filteredMagazines = allMagazines
+				.Where(m => m.Name.Contains(searchTextNewMagazine, StringComparison.OrdinalIgnoreCase))
 				.ToList();
 		}
 
@@ -550,7 +585,7 @@
 	private void SelectNewMagazine(Magazine magazine)
 	{
 		newProduct.Magazine = magazine;
-		searchText = magazine.Name;
+		searchTextNewMagazine = magazine.Name;
 		newProduct.MagazineId = magazine.Id;
 		filteredMagazines.Clear();
 		showSuggestions = false;
@@ -575,6 +610,14 @@
 		else if (id == 4 && currentProduct is null)
 		{
 			windowId = 8;
+		}
+		else if (id == 1)
+		{
+			newProduct = new();
+			searchTextProductCard = "";
+			searchTextNewMagazine = "";
+			checkedExpiryDate = false;
+			windowId = id;
 		}
 		else
 		{
