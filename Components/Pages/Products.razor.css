@@ -119,6 +119,16 @@
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
 }
 
+.delete-button {
+    background: #fc7a6b;
+    color: white;
+}
+
+    .delete-button:hover {
+        background: #c0392b;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+    }
+
 .wydaj-container {
     position: absolute;
     visibility: hidden;
@@ -297,16 +307,6 @@
         margin-top: 5px;
         border: 1px solid #ccc;
         border-radius: 4px;
-    }
-
-.delete-button {
-    background: #fc7a6b;
-    color: white;
-}
-
-    .delete-button:hover {
-        background: #c0392b;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
     }
 
 .products-table tr.active-row {

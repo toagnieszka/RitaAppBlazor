@@ -247,6 +247,7 @@
 		</div>
 	</div>
 
+
 	<div class="details-container @(windowId == 7 ? "set-visible" : "set-hidden" )">
 		<h2>Szczegóły</h2>
 		@if (currentProduct is not null)
@@ -466,39 +467,39 @@
 		{
 			tempProduct = new Product
 				{
-					Id = currentProduct.Id,
-					CreatedDate = currentProduct.CreatedDate,
+					Id = product.Id,
+					CreatedDate = product.CreatedDate,
 					Magazine = new Magazine
 					{
-						Id = currentProduct.Magazine.Id,
-						Name = currentProduct.Magazine.Name,
-						Location = currentProduct.Magazine.Location
+						Id = product.Magazine.Id,
+						Name = product.Magazine.Name,
+						Location = product.Magazine.Location
 					},
-					MagazineId = currentProduct.MagazineId,
-					Amount = currentProduct.Amount,
+					MagazineId = product.MagazineId,
+					Amount = product.Amount,
 					ProductCard = new ProductCard
 					{
-						Id = currentProduct.ProductCard.Id,
-						Name = currentProduct.ProductCard.Name,
-						CategoryId = currentProduct.ProductCard.CategoryId,
-						Categories = currentProduct.ProductCard.Categories
+						Id = product.ProductCard.Id,
+						Name = product.ProductCard.Name,
+						CategoryId = product.ProductCard.CategoryId,
+						Categories = product.ProductCard.Categories
 													.Select(c => new Category { Id = c.Id, Name = c.Name })
 													.ToList(),
 						Unit = new Unit
 						{
-							Id = currentProduct.ProductCard.Unit.Id,
-							Name = currentProduct.ProductCard.Unit.Name,
-							ShortName = currentProduct.ProductCard.Unit.ShortName
+							Id = product.ProductCard.Unit.Id,
+							Name = product.ProductCard.Unit.Name,
+							ShortName = product.ProductCard.Unit.ShortName
 						},
-						UnitId = currentProduct.ProductCard.UnitId
+						UnitId = product.ProductCard.UnitId
 					},
-					ProductCardId = currentProduct.ProductCardId,
-					Status = currentProduct.Status,
-					ExpireDate = currentProduct.ExpireDate,
-					Comment = currentProduct.Comment,
-					LoanDate = currentProduct.LoanDate,
-					Lender = currentProduct.Lender,
-					Borrower = currentProduct.Borrower
+					ProductCardId = product.ProductCardId,
+					Status = product.Status,
+					ExpireDate = product.ExpireDate,
+					Comment = product.Comment,
+					LoanDate = product.LoanDate,
+					Lender = product.Lender,
+					Borrower = product.Borrower
 				};
 		}
 	}
@@ -637,6 +638,10 @@
 		{
 			EditProduct(currentProduct);
 			windowId = id;
+		}
+		else if (id == 2 && currentProduct is null)
+		{
+			windowId = 8;
 		}
 		else if (id == 1)
 		{
