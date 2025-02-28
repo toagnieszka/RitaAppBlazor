@@ -80,40 +80,42 @@
 	</div>
 
 	<div class="wydaj-container @(windowId == 2 ? "set-visible" : "set-hidden" )">
-		<h2>Wydaj produkt</h2>
+		@if (tempProduct is not null && currentProduct is not null)
+		{
+			<h2>Wydaj produkt</h2>
 
-		<div style="display: flex; align-items: center; gap: 10px; margin-bottom: 0.5rem">
+			<div style="display: flex; align-items: center; gap: 10px; margin-bottom: 0.5rem">
+				<label>
+					Aktualna ilość:
+				</label>
+				<div>@currentProduct.Amount</div>
+				<div>@currentProduct.ProductCard.Unit.ShortName</div>
+			</div>
+
 			<label>
-				Aktualna ilość:
+				Wydajesz:
 			</label>
-			<div>6</div>
-			<div>szt</div>
-		</div>
+			<div style="display: flex; align-items: center; gap: 10px; margin-bottom:0.5rem">
+				<div style="width: 30%; display: flex"><input type="number" id="quantity" min="1" placeholder="Wpisz ilość" @bind="issuedAmount"></div>
+				<div style="width: 30%; display: flex">@currentProduct.ProductCard.Unit.ShortName</div>
+			</div>
 
+			<div style="display: flex; align-items: center; gap: 10px; margin-bottom: 0.5rem">
+				<label>
+					Ilość po wydaniu:
+				</label>
+				<div>@NewAmount(issuedAmount)</div>
+				<div>@currentProduct.ProductCard.Unit.ShortName</div>
+			</div>
 
-		<label>
-			Wydajesz:
-		</label>
-		<div style="display: flex; align-items: center; gap: 10px; margin-bottom:0.5rem">
-			<div style="width: 30%; display: flex"><input type="number" id="quantity" min="1" placeholder="Wpisz ilość"></div>
-			<div style="width: 30%; display: flex">szt</div>
-		</div>
+			<label>Komentarz:</label>
+			<textarea id="comment" placeholder="Dodaj komentarz" @bind="tempProduct.Comment"></textarea>
 
-		<div style="display: flex; align-items: center; gap: 10px; margin-bottom: 0.5rem">
-			<label>
-				Ilośc po wydaniu:
-			</label>
-			<div>6</div>
-			<div>szt</div>
-		</div>
-
-		<label>Komentarz:</label>
-		<textarea id="comment" placeholder="Dodaj komentarz"></textarea>
-
-		<div class="button-group">
-			<button class="cancel-button" @onclick="()=>CloseWindow(10)">Anuluj</button>
-			<button class="save-button" onclick="">Zapisz</button>
-		</div>
+			<div class="button-group">
+				<button class="cancel-button" @onclick="()=>CloseWindow(10)">Anuluj</button>
+				<button class="save-button" @onclick="()=>UpdateProduct(tempProduct)">Zapisz</button>
+			</div>
+		}
 	</div>
 
 	<div class="wypożycz-container @(windowId == 3 ? "set-visible" : "set-hidden" )">
@@ -238,7 +240,10 @@
 
 		<div class="button-group">
 			<button class="cancel-button" @onclick="()=>CloseWindow(10)">Anuluj</button>
-			<button class="delete-button" onclick="">Usuń</button>
+			@if (tempProduct is not null)
+			{
+				<button class="delete-button" @onclick="()=>DeleteProduct(currentProduct.Id)">Usuń</button>
+			}
 		</div>
 	</div>
 
@@ -359,6 +364,7 @@
 	private bool showProductCardsSuggestions = true;
 	private int windowId = 0;
 	private string productWithoutExpireDate = "N/D";
+	private float issuedAmount = 0;
 
 	HttpClient httpClient = new();
 
@@ -433,6 +439,22 @@
 
 	}
 
+	protected async Task DeleteProduct(int productId)
+	{
+		var response = await httpClient.DeleteAsync($"http://localhost:5000/api/Products/{productId}");
+
+		if (response.IsSuccessStatusCode)
+		{
+			CloseWindow(10);
+			StateHasChanged();
+		}
+		else
+		{
+			var errorMessage = await response.Content.ReadAsStringAsync();
+			Console.WriteLine($"Błąd podczas usuwania: {errorMessage}");
+		}
+	}
+
 	private void SetCurrentProduct(Product product)
 	{
 		currentProduct = product;
@@ -460,8 +482,8 @@
 						Name = currentProduct.ProductCard.Name,
 						CategoryId = currentProduct.ProductCard.CategoryId,
 						Categories = currentProduct.ProductCard.Categories
-										.Select(c => new Category { Id = c.Id, Name = c.Name })
-										.ToList(),
+													.Select(c => new Category { Id = c.Id, Name = c.Name })
+													.ToList(),
 						Unit = new Unit
 						{
 							Id = currentProduct.ProductCard.Unit.Id,
@@ -502,7 +524,7 @@
 		}
 		else
 		{
-			newProduct.ExpireDate = DateTime.MinValue; 
+			newProduct.ExpireDate = DateTime.MinValue;
 		}
 	}
 
@@ -611,6 +633,11 @@
 		{
 			windowId = 8;
 		}
+		else if (id == 2 && currentProduct is not null)
+		{
+			EditProduct(currentProduct);
+			windowId = id;
+		}
 		else if (id == 1)
 		{
 			newProduct = new();
@@ -628,5 +655,12 @@
 	private void CloseWindow(int id)
 	{
 		windowId = id;
+	}
+
+	private float NewAmount(float issuedAmount)
+	{
+		var newAmount = currentProduct.Amount - issuedAmount;
+		tempProduct.Amount = newAmount;
+		return newAmount;
 	}
 }

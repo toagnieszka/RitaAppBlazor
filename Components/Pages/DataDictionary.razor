@@ -1,263 +1,231 @@
 ﻿@page "/DataDictionary"
+@using RitaAppBlazor.Data.Models
+@inject NavigationManager NavManager
 
-<div class="tabs-container">
-    <!-- Lewa część: Zakładki -->
-    <div class="tabs">
-        <div class="tab active" data-content="magazyn">Magazyn</div>
-        <div class="tab" data-content="jednostka">Jednostka</div>
-        <div class="tab" data-content="kategoria">Kategoria</div>
-        <div class="tab" data-content="karta-produktu">Karta Produktu</div>
-    </div>
+<main>
+	<div class="tabs-container">
+		<!-- Lewa część: Zakładki -->
+		<div class="tabs">
+			<div class="@(dictionaryType == "m" ? "tab active" : "tab")" @onclick='() => SetParameterValue("m")' data-content="magazyn">Magazyn</div>
+			<div class="@(dictionaryType == "u" ? "tab active" : "tab")" @onclick='() => SetParameterValue("u")' data-content="jednostka">Jednostka</div>
+			<div class="@(dictionaryType == "c" ? "tab active" : "tab")" @onclick='() => SetParameterValue("c")' data-content="kategoria">Kategoria</div>
+			<div class="@(dictionaryType == "pc" ? "tab active" : "tab")" @onclick='() => SetParameterValue("pc")' data-content="karta-produktu">Karta Produktu</div>
+		</div>
 
-    <!-- Prawa część: Przyciski akcji -->
-    <div class="actions">
-        <button class="action-button">Dodaj</button>
-        <button class="action-button">Edytuj</button>
-        <button class="action-button">Usuń</button>
-    </div>
-</div>
-
-<!-- Główna treść sekcji -->
-<div class="content-container">
-    <div id="magazyn" class="content active">
-        <div class="table-container">
-            <table class="dataDictionary-table">
-                <thead>
-                    <tr>
-                        <th>Nazwa</th>
-                        <th>Lokalizacja</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>Szafa 2</td>
-                        <td>Salki</td>
-                    </tr>
-                    <tr>
-                        <td>Pokój 3</td>
-                        <td>Szpital</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
-</div>
-
-    <div id="jednostka" class="content">
-        <div class="table-container">
-            <table class="dataDictionary-table">
-                <thead>
-                    <tr>
-                        <th>Nazwa</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>Gramy</td>
-                    </tr>
-                    <tr>
-                        <td>Sztuki</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
-
-    <div id="kategoria" class="content">
-    <div class="table-container">
-        <table class="dataDictionary-table">
-            <thead>
-                <tr>
-                    <th>Nazwa</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>Elektronika</td>
-                </tr>
-                <tr>
-                    <td>Artykuły spożywcze</td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
-    </div>
-
-    <div id="karta-produktu" class="content">
-    <div class="table-container">
-        <table class="dataDictionary-table">
-            <thead>
-                <tr>
-                    <th>Nazwa</th>
-                    <th>Kategoria</th>
-                    <th>Jednostka</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>Słuchawki</td>
-                    <td>Elektronika</td>
-                    <td>Sztuki</td>
-                </tr>
-                <tr>
-                    <td>Kisiel</td>
-                    <td>Artykuły Spożywcze</td>
-                    <td>Sztuki</td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
-    </div>
+		<!-- Prawa część: Przyciski akcji -->
+		<div class="actions">
+			<button class="action-button">Dodaj</button>
+			<button class="action-button">Edytuj</button>
+			<button class="action-button">Usuń</button>
+		</div>
+	</div>
 
 
-<style>
-    /* Kontener na zakładki i przyciski */
-    .tabs-container {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 4rem 4rem;
-    }
 
-    /* Sekcja zakładek */
-    .tabs {
-        display: flex;
-        gap: 0.5rem;
-        border-bottom: 2px solid #fc7a6b;
-    }
+	<!-- Główna treść sekcji -->
+	<div class="content-container">
+		<div id="magazyn" class="@(dictionaryType == "m" ? "content active" : "content")">
+			<div class="table-container">
+				<table class="dataDictionary-table">
+					<thead>
+						<tr>
+							<th>Nazwa</th>
+							<th>Lokalizacja</th>
+						</tr>
+					</thead>
+					<tbody>
+						@if (magazines is not null)
+						{
+							foreach (var magazine in magazines)
+							{
+								<tr id="@magazine.Id" @onclick="()=>SetParameterValue(dictionaryType, magazine.Id.ToString())" class="@(magazine.Id == currentMagazine.Id ? "active-row" : "")">
+									<td>@magazine.Name</td>
+									<td>@magazine.Location</td>
+								</tr>
+							}
+						}
+					</tbody>
+				</table>
+			</div>
+		</div>
 
-    .tab {
-        padding: 0.75rem 1rem;
-        cursor: pointer;
-        transition: 0.3s;
-        position: relative;
-        font-weight: bold;
-        color: black;
-    }
 
-        /* Aktywna zakładka */
-        .tab.active {
-            background: #ffeeec;
-            border-radius: 8px 8px 0 0;
-        }
+		<div id="jednostka" class="@(dictionaryType == "u" ? "content active" : "content")">
+			<div class="table-container">
+				<table class="dataDictionary-table">
+					<thead>
+						<tr>
+							<th>Nazwa</th>
+							<th>Skrót</th>
+						</tr>
+					</thead>
+					<tbody>
+						@if (units is not null)
+						{
+							foreach (var unit in units)
+							{
+								<tr id="@unit.Id" @onclick="()=>SetParameterValue(dictionaryType, unit.Id.ToString())" class="@(unit.Id == currentUnit.Id ? "active-row" : "")">
+									<td>@unit.Name</td>
+									<td>@unit.ShortName</td>
+								</tr>
+							}
+						}
+					</tbody>
+				</table>
+			</div>
+		</div>
 
-    /* Przyciski akcji */
-    .actions {
-        display: flex;
-        gap: 0.5rem;
-    }
+		<div id="kategoria" class="@(dictionaryType == "c" ? "content active" : "content")">
+			<div class="table-container">
+				<table class="dataDictionary-table">
+					<thead>
+						<tr>
+							<th>Nazwa</th>
+						</tr>
+					</thead>
+					<tbody>
+						@if (categories is not null)
+						{
+							foreach (var category in categories)
+							{
+								<tr id="@category.Id" @onclick="()=>SetParameterValue(dictionaryType, category.Id.ToString())" class="@(category.Id == currentCategory.Id ? "active-row" : "")">
+									<td>@category.Name</td>
+								</tr>
+							}
+						}
+					</tbody>
+				</table>
+			</div>
+		</div>
 
-    .action-button {
-        padding: 0.5rem 1rem;
-        background-color: #38bdfa;
-        color: white;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-    }
-
-        .action-button:hover {
-            background-color: #0056b3;
-        }
-
-    /* Treść zakładek */
-    .content-container {
-        padding: 1rem;
-    }
-
-    .content {
-        display: none;
-    }
-
-        .content.active {
-            display: block;
-        }
-
-    .dataDictionary-table tr.active-row {
-        background-color: #ffd4cf !important; /* Kolor zaznaczonego wiersza */
-    }
-
-    .table-controls {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-left: 4rem;
-        margin-right: 4rem;
-        margin-bottom: 1.5rem;
-        padding-top: 60px;
-    }
-
-    .table-container {
-        width: 90%;
-        max-width: 4000px;
-        margin: 2rem auto;
-        padding: 1rem;
-    }
-
-    .dataDictionary-table {
-        width: 100%;
-        border-collapse: collapse;
-        font-size: 1rem;
-        text-align: left;
-    }
-
-        .dataDictionary-table th,
-        .dataDictionary-table td {
-            border: 1px solid #ddd;
-            padding: 0.75rem;
-        }
-
-        .dataDictionary-table th {
-            background-color: #f4f4f4;
-            font-weight: bold;
-        }
-
-        .dataDictionary-table tr:nth-child(even) {
-            background-color: #f9f9f9;
-        }
-
-        .dataDictionary-table tr:hover {
-            background-color: #eaeaea;
-            cursor: pointer;
-        }
-</style>
-
-<script>
-    document.addEventListener("DOMContentLoaded", function () {
-        const tabs = document.querySelectorAll(".tab");
-        const contents = document.querySelectorAll(".content");
-
-        tabs.forEach(tab => {
-            tab.addEventListener("click", function () {
-                // Dezaktywuj wszystkie zakładki i ukryj treści
-                tabs.forEach(t => t.classList.remove("active"));
-                contents.forEach(c => c.classList.remove("active"));
-
-                // Aktywuj klikniętą zakładkę
-                this.classList.add("active");
-
-                // Pokaż odpowiednią treść
-                const contentId = this.getAttribute("data-content");
-                document.getElementById(contentId).classList.add("active");
-            });
-        });
-    });
-
-    document.addEventListener("DOMContentLoaded", function () {
-        const rows = document.querySelectorAll(".dataDictionary-table tbody tr");
-
-        rows.forEach(row => {
-            row.addEventListener("click", () => {
-                // Usuń klasę "active-row" z wszystkich wierszy
-                rows.forEach(r => r.classList.remove("active-row"));
-
-                // Dodaj klasę "active-row" do klikniętego wiersza
-                row.classList.add("active-row");
-            });
-        });
-    });
-</script>
+		<div id="karta-produktu" class="@(dictionaryType == "pc" ? "content active" : "content")">
+			<div class="table-container">
+				<table class="dataDictionary-table">
+					<thead>
+						<tr>
+							<th>Nazwa</th>
+							<th>Kategoria</th>
+							<th>Jednostka</th>
+						</tr>
+					</thead>
+					<tbody>
+						@if (productCards is not null)
+						{
+							foreach (var productCard in productCards)
+							{
+								<tr id="@productCard.Id" @onclick="()=>SetParameterValue(dictionaryType, productCard.Id.ToString())" class="@(productCard.Id == currentProductCard.Id ? "active-row" : "")">
+									<td>@productCard.Name</td>
+									<td>@string.Join(", ", @productCard.Categories?.Select(p => p.Name))</td>
+									<td>@productCard.Unit.Name</td>
+								</tr>
+							}
+						}
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+</main>
 
 @code {
+	[Parameter]
+	[SupplyParameterFromQuery(Name = "dt")]
+	public string dictionaryType { get; set; }
+	[Parameter]
+	[SupplyParameterFromQuery(Name = "id")]
+	public string recordId { get; set; }
+
+	private Magazine currentMagazine = new();
+	private Unit currentUnit = new();
+	private Category currentCategory = new();
+	private ProductCard currentProductCard = new();
+
+	HttpClient httpClient = new();
+
+	private List<Magazine>? magazines = new();
+	private List<Unit>? units = new();
+	private List<Category>? categories = new();
+	private List<ProductCard>? productCards = new();
+
+	protected async override Task OnInitializedAsync()
+	{
+		var magazineResponse = await httpClient.GetAsync("http://localhost:5000/api/Magazines");
+		var unitResponse = await httpClient.GetAsync("http://localhost:5000/api/Units");
+		var categoryResponse = await httpClient.GetAsync("http://localhost:5000/api/Categories");
+		var productCardResponse = await httpClient.GetAsync("http://localhost:5000/api/ProductCards");
+
+		if (magazineResponse.IsSuccessStatusCode)
+		{
+			var magazineText = await magazineResponse.Content.ReadAsStringAsync();
+			magazines = System.Text.Json.JsonSerializer.Deserialize<List<Magazine>>(magazineText);
+		}
+
+		if (unitResponse.IsSuccessStatusCode)
+		{
+			var unitText = await unitResponse.Content.ReadAsStringAsync();
+			units = System.Text.Json.JsonSerializer.Deserialize<List<Unit>>(unitText);
+		}
+
+		if (categoryResponse.IsSuccessStatusCode)
+		{
+			var categoryText = await categoryResponse.Content.ReadAsStringAsync();
+			categories = System.Text.Json.JsonSerializer.Deserialize<List<Category>>(categoryText);
+		}
+
+		if (productCardResponse.IsSuccessStatusCode)
+		{
+			var productCardText = await productCardResponse.Content.ReadAsStringAsync();
+			productCards = System.Text.Json.JsonSerializer.Deserialize<List<ProductCard>>(productCardText);
+		}
+		StateHasChanged();
+
+		return;
+	}
+
+	protected async override Task OnParametersSetAsync()
+	{
+		if (dictionaryType == "m" && recordId == "0")
+		{
+			currentMagazine = new();
+		}
+		else if (dictionaryType == "u" && recordId == "0")
+		{
+			currentUnit = new();
+		}
+		else if (dictionaryType == "c" && recordId == "0")
+		{
+			currentCategory = new();
+		}
+		else if (dictionaryType == "pc" && recordId == "0")
+		{
+			currentProductCard = new();
+		}
+		else if (dictionaryType == "m" && recordId != "0")
+		{
+			var intId = int.Parse(recordId);
+			currentMagazine = magazines.First(x => x.Id == intId);
+		}
+		else if (dictionaryType == "u" && recordId != "0")
+		{
+			var intId = int.Parse(recordId);
+			currentUnit = units.First(x => x.Id == intId);
+		}
+		else if (dictionaryType == "c" && recordId != "0")
+		{
+			var intId = int.Parse(recordId);
+			currentCategory = categories.First(x => x.Id == intId);
+		}
+		else if (dictionaryType == "pc" && recordId != "0")
+		{
+			var intId = int.Parse(recordId);
+			currentProductCard = productCards.First(x => x.Id == intId);
+		}
+		return;
+	}
+
+	private void SetParameterValue(string dictionaryType, string id = "0")
+	{
+		NavManager.NavigateTo($"https://localhost:7110/dataDictionary?dt={dictionaryType}&id={id}");
+	}
 
 }

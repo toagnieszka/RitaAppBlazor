@@ -1,0 +1,118 @@
+﻿/* Kontener na zakładki i przyciski */
+.tabs-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 4rem 4rem;
+}
+
+/* Sekcja zakładek */
+.tabs {
+    display: flex;
+    gap: 0.5rem;
+    border-bottom: 2px solid #fc7a6b;
+}
+
+.tab {
+    padding: 0.75rem 1rem;
+    cursor: pointer;
+    transition: 0.3s;
+    position: relative;
+    font-weight: bold;
+    color: black;
+}
+
+    /* Aktywna zakładka */
+    .tab.active {
+        background: #ffeeec;
+        border-radius: 8px 8px 0 0;
+    }
+
+/* Przyciski akcji */
+.actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.action-button {
+    padding: 0.5rem 1rem;
+    background-color: #38bdfa;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+    .action-button:hover {
+        background-color: #0056b3;
+    }
+
+/* Treść zakładek */
+.content-container {
+    padding: 1rem;
+}
+
+.content {
+    display: none;
+}
+
+    .content.active {
+        display: block;
+    }
+
+
+
+.table-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-left: 4rem;
+    margin-right: 4rem;
+    margin-bottom: 1.5rem;
+    padding-top: 60px;
+}
+
+.table-container {
+    width: 90%;
+    max-width: 4000px;
+    margin: 2rem auto;
+    padding: 1rem;
+}
+
+.dataDictionary-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 1rem;
+    text-align: left;
+}
+
+    .dataDictionary-table th,
+    .dataDictionary-table td {
+        border: 1px solid #ddd;
+        padding: 0.75rem;
+    }
+
+    .dataDictionary-table th {
+        background-color: #f4f4f4;
+        font-weight: bold;
+    }
+
+    .dataDictionary-table tr:nth-child(even) {
+        background-color: #f9f9f9;
+    }
+
+    .dataDictionary-table tr:hover {
+        background-color: #eaeaea;
+        cursor: pointer;
+    }
+
+    .active-row {
+        background-color: #ffd4cf !important; /* Kolor zaznaczonego wiersza */
+    }
+
+
+
+        .dataDictionary-table tr.active-row td,
+        .dataDictionary-table tr.active-row th {
+            border: 1px solid #d3d3d3 !important;
+        }

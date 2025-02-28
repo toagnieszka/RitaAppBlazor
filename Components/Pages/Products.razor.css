@@ -408,7 +408,7 @@
 
         .products-table tr.active-row td,
         .products-table tr.active-row th {
-            border: 1px solid #d3d3d3 !important; /* Czarna ramka dla każdej komórki */
+            border: 1px solid #d3d3d3 !important; 
         }
 
 .info-icon {
