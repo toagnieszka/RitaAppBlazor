@@ -5,6 +5,10 @@
 @inject NavigationManager NavManager
 
 <main>
+	@if (dictionaryType is null)
+	{
+		SetParameterValue("m");
+	}
 	<div class="tabs-container">
 		<!-- Lewa część: Zakładki -->
 		<div class="tabs">
@@ -112,39 +116,139 @@
 	<div class="productCard-container @(windowId == 7 ? "set-visible" : "set-hidden" )">
 		<h2>Dodaj kartę produktu</h2>
 		<label>Nazwa:</label>
-		<input type="text" placeholder="Wpisz nazwę karty produktu">
+		<input type="text" placeholder="Wpisz nazwę karty produktu" @bind="createProductCard.Name" />
 
 		<label>Kategorie:</label>
-		<input type="text" placeholder="Wybierz kategorie">
+		<div class="search-container">
+			<input type="text" placeholder="Wybierz kategorie"
+				   @bind="searchNewCategory"
+				   @oninput="CategoriesOnNewSearchChanged"
+				   @onfocus="ShowAllNewCategories">
 
-		<div>tutaj będą pojawiać się wybrane kategorie</div>
+			@if (showNewCategoriesSuggestions && filteredCategories.Any())
+			{
+				<button type="button" class="clear-button" @onclick="HideNewCategories">X</button>
+			}
+		</div>
+
+		@if (showNewCategoriesSuggestions && filteredCategories.Any())
+		{
+			<ul class="categorySuggestions">
+				@foreach (var category in filteredCategories)
+				{
+					<div class="category-item">
+						<div>
+							<input type="checkbox"
+								   checked="@selectedNewCategoryIds.Contains(category.Id)"
+								   @onchange="() => ToggleNewCategorySelection(category.Id)" />
+						</div>
+						<div>@category.Name</div>
+					</div>
+				}
+			</ul>
+		}
+
+		<!-- Wybrane kategorie -->
+		@if (selectedNewCategoryIds.Any())
+		{
+			<div class="selected-categories">
+				<strong>Wybrane kategorie:</strong>
+				<ul class="scrollable-list">
+					@foreach (var category in categories.Where(c => selectedNewCategoryIds.Contains(c.Id)))
+					{
+						<li>@category.Name</li>
+					}
+				</ul>
+			</div>
+		}
 
 		<label>Jednostka:</label>
-		<input type="text" placeholder="Wybierz jednostkę">
+		<input type="text" placeholder="Wybierz jednostkę" @bind="searchNewUnit" @oninput="UnitsOnCreatingSearchChanged">
+		@if (showNewUnitsSuggestions && filteredUnits.Any())
+		{
+			<ul class="suggestions">
+				@foreach (var unit in filteredUnits)
+				{
+					<li @onclick="() => SelectNewUnit(unit)">@unit.Name</li>
+				}
+			</ul>
+		}
 
 		<div class="button-group">
 			<button class="cancel-button" @onclick="()=>CloseWindow(10)">Anuluj</button>
-			<button class="save-button">Zapisz</button>
+			<button class="save-button" @onclick="()=>CreateProductCard(createProductCard)">Zapisz</button>
 		</div>
 	</div>
 
 	<div class="productCard-container @(windowId == 8 ? "set-visible" : "set-hidden" )">
-		<h2>Dodaj kartę produktu</h2>
-		<label>Nazwa:</label>
-		<input type="text" placeholder="Wpisz nazwę karty produktu">
+		@if (tempProductCard is not null && editedProductCard is not null)
+		{
+			<h2>Edytuj kartę produktu</h2>
+			<label>Nazwa:</label>
+			<input type="text" placeholder="Wpisz nazwę karty produktu" @bind="tempProductCard.Name">
 
-		<label>Kategorie:</label>
-		<input type="text" placeholder="Wybierz kategorie">
+			<label>Kategorie:</label>
+			<div class="search-container">
+				<input type="text" placeholder="Wybierz kategorie"
+					   @bind="searchEditedCategory"
+					   @oninput="CategoriesOnEditedSearchChanged"
+					   @onfocus="ShowAllEditedCategories">
 
-		<div>tutaj będą pojawiać się wybrane kategorie</div>
+				@if (showEditedCategoriesSuggestions && filteredCategories.Any())
+				{
+					<button type="button" class="clear-button" @onclick="HideEditedCategories">X</button>
+				}
+			</div>
 
-		<label>Jednostka:</label>
-		<input type="text" placeholder="Wybierz jednostkę">
+			@if (showEditedCategoriesSuggestions && filteredCategories.Any())
+			{
+				<ul class="categorySuggestions">
 
-		<div class="button-group">
-			<button class="cancel-button" @onclick="()=>CloseWindow(10)">Anuluj</button>
-			<button class="save-button">Zapisz</button>
-		</div>
+					@foreach (var category in filteredCategories)
+					{
+						<div class="category-item">
+							<div>
+								<input type="checkbox"
+									   checked="@selectedEditedCategoryIds.Contains(category.Id)"
+									   @onchange="() => ToggleEditedCategorySelection(category.Id)" />
+							</div>
+							<div>@category.Name</div>
+						</div>
+					}
+				</ul>
+			}
+
+			<!-- Wybrane kategorie -->
+			@if (selectedEditedCategoryIds.Any())
+			{
+				<div class="selected-categories">
+					<strong>Wybrane kategorie:</strong>
+					<ul class="scrollable-list">
+						@foreach (var category in categories.Where(c => selectedEditedCategoryIds.Contains(c.Id)))
+						{
+							<li>@category.Name</li>
+						}
+					</ul>
+				</div>
+			}
+
+			<label>Jednostka:</label>
+			<input type="text" placeholder="Wybierz jednostkę" @bind="searchEditedUnit = editedProductCard.Unit.Name" @oninput="UnitsOnEditingSearchChanged">
+			@if (showEditedUnitsSuggestions && filteredUnits.Any())
+			{
+				<ul class="suggestions">
+					@foreach (var unit in filteredUnits)
+					{
+						<li @onclick="() => SelectEditedUnit(unit)">@unit.Name</li>
+					}
+				</ul>
+			}
+
+			<div class="button-group">
+				<button class="cancel-button" @onclick="()=>CloseWindow(10)">Anuluj</button>
+				<button class="save-button" @onclick="()=>UpdateProductCard(tempProductCard)">Zapisz</button>
+			</div>
+		}
 	</div>
 
 	<div class="delete-container @(windowId == 9 ? "set-visible" : "set-hidden")">
@@ -152,7 +256,16 @@
 
 		<div class="button-group">
 			<button class="cancel-button" @onclick="()=>CloseWindow(10)">Anuluj</button>
-			<button class="delete-button">Usuń</button>
+			<button class="delete-button" @onclick="()=>DeleteItem()">Usuń</button>
+		</div>
+	</div>
+
+	<div class="nullProduct-container @(windowId == 11 ? "set-visible" : "set-hidden" )">
+		<h2>Nie wybrano żadnego produktu.</h2>
+
+
+		<div class="button-group">
+			<button class="cancel-button" @onclick="()=>CloseWindow(10)">Anuluj</button>
 		</div>
 	</div>
 
@@ -276,19 +389,35 @@
 	private Magazine newMagazine = new();
 	private Unit newUnit = new();
 	private Category newCategory = new();
-	private ProductCard newProductCard = new();
+	private CreateProductCard createProductCard = new();
+	private CreateProductCard tempProductCard = new();
+	private ProductCard editedProductCard = new();
 	private Magazine tempMagazine = new();
 	private Unit tempUnit = new();
 	private Category tempCategory = new();
-	private ProductCard tempProductCard = new();
 	private int windowId = 0;
+	private int itemId = 0;
+	private bool showNewUnitsSuggestions = true;
+	private bool showNewCategoriesSuggestions = true;
+	private string searchNewUnit = "";
+	private string searchNewCategory = "";
+	private bool showEditedUnitsSuggestions = true;
+	private bool showEditedCategoriesSuggestions = true;
+	private string searchEditedUnit = "";
+	private string searchEditedCategory = "";
 
 	HttpClient httpClient = new();
 
 	private List<Magazine>? magazines = new();
 	private List<Unit>? units = new();
+	private List<Unit>? filteredUnits = new();
 	private List<Category>? categories = new();
+	private List<Category>? filteredCategories = new();
 	private List<ProductCard>? productCards = new();
+	private List<int> selectedNewCategoryIds = new();
+	private List<Category> selectedNewCategories = new();
+	private List<int> selectedEditedCategoryIds = new();
+	private List<Category> selectedEditedCategories = new();
 
 	protected async override Task OnInitializedAsync()
 	{
@@ -461,6 +590,24 @@
 
 	}
 
+	protected async Task CreateProductCard(CreateProductCard createproductCard)
+	{
+		var json = JsonConvert.SerializeObject(createproductCard);
+		var data = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
+		var response = await httpClient.PostAsync("http://localhost:5000/api/ProductCards", data);
+		if (response.IsSuccessStatusCode)
+		{
+			CloseWindow(10);
+			StateHasChanged();
+		}
+		else
+		{
+			var errorMessage = await response.Content.ReadAsStringAsync();
+			Console.WriteLine($"Błąd: {errorMessage}");
+		}
+
+	}
+
 	protected async Task UpdateCategory(Category category)
 	{
 		var json = JsonConvert.SerializeObject(category);
@@ -476,12 +623,85 @@
 			var errorMessage = await response.Content.ReadAsStringAsync();
 			Console.WriteLine($"Błąd: {errorMessage}");
 		}
+	}
 
+	protected async Task UpdateProductCard(CreateProductCard productCard)
+	{
+		var json = JsonConvert.SerializeObject(productCard);
+		var data = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
+		var response = await httpClient.PutAsync("http://localhost:5000/api/ProductCards", data);
+		if (response.IsSuccessStatusCode)
+		{
+			CloseWindow(10);
+			StateHasChanged();
+		}
+		else
+		{
+			var errorMessage = await response.Content.ReadAsStringAsync();
+			Console.WriteLine($"Błąd: {errorMessage}");
+		}
+	}
+
+	protected async Task DeleteItemById(int itemId)
+	{
+		HttpResponseMessage response = new();
+
+		if (dictionaryType == "m")
+		{
+			response = await httpClient.DeleteAsync($"http://localhost:5000/api/Magazines/{itemId}");
+		}
+		else if (dictionaryType == "u")
+		{
+			response = await httpClient.DeleteAsync($"http://localhost:5000/api/Units/{itemId}");
+		}
+		else if (dictionaryType == "c")
+		{
+			response = await httpClient.DeleteAsync($"http://localhost:5000/api/Categories/{itemId}");
+		}
+		else if (dictionaryType == "pc")
+		{
+			response = await httpClient.DeleteAsync($"http://localhost:5000/api/ProductCards/{itemId}");
+		}
+
+		if (response.IsSuccessStatusCode)
+		{
+			CloseWindow(10);
+			StateHasChanged();
+		}
+		else
+		{
+			var errorMessage = await response.Content.ReadAsStringAsync();
+			Console.WriteLine($"Błąd podczas usuwania: {errorMessage}");
+		}
+	}
+
+	private async void DeleteItem()
+	{
+		if (dictionaryType == "m")
+		{
+			await DeleteItemById(currentMagazine.Id);
+			SetParameterValue("m");
+		}
+		else if (dictionaryType == "u")
+		{
+			await DeleteItemById(currentUnit.Id);
+			SetParameterValue("u");
+		}
+		else if (dictionaryType == "c")
+		{
+			await DeleteItemById(currentCategory.Id);
+			SetParameterValue("c");
+		}
+		else if (dictionaryType == "pc")
+		{
+			await DeleteItemById(currentProductCard.Id);
+			SetParameterValue("pc");
+		}
 	}
 
 	private void EditMagazine(Magazine magazine)
 	{
-		if(magazine is not null)
+		if (magazine is not null)
 		{
 			tempMagazine = new Magazine
 				{
@@ -520,6 +740,206 @@
 		}
 	}
 
+	private void EditProductCard(ProductCard productCard)
+	{
+		if (productCard is not null)
+		{
+			editedProductCard = new ProductCard
+				{
+					Unit = productCard.Unit
+				};
+			selectedEditedCategoryIds = productCard.Categories.Select(x => x.Id).ToList();
+			tempProductCard = new CreateProductCard
+				{
+					Id = productCard.Id,
+					Name = productCard.Name,
+					UnitId = productCard.UnitId,
+					CategoryIds = selectedEditedCategoryIds
+				};
+		}
+	}
+
+	private void UnitsOnCreatingSearchChanged(ChangeEventArgs e)
+	{
+		searchNewUnit = e.Value.ToString();
+
+		if (string.IsNullOrWhiteSpace(searchNewUnit))
+		{
+			// Ukryj sugestie, jeśli pole jest puste
+			showNewUnitsSuggestions = false;
+			filteredUnits.Clear();
+		}
+		else
+		{
+			// Pokazuj sugestie, gdy tekst jest wpisany
+			showNewUnitsSuggestions = true;
+			filteredUnits = units
+				.Where(m => m.Name.Contains(searchNewUnit, StringComparison.OrdinalIgnoreCase))
+				.ToList();
+		}
+
+		StateHasChanged();
+	}
+
+	private void UnitsOnEditingSearchChanged(ChangeEventArgs e)
+	{
+		searchEditedUnit = e.Value.ToString();
+
+		if (string.IsNullOrWhiteSpace(searchEditedUnit))
+		{
+			// Ukryj sugestie, jeśli pole jest puste
+			showEditedUnitsSuggestions = false;
+			filteredUnits.Clear();
+		}
+		else
+		{
+			// Pokazuj sugestie, gdy tekst jest wpisany
+			showEditedUnitsSuggestions = true;
+			filteredUnits = units
+				.Where(m => m.Name.Contains(searchEditedUnit, StringComparison.OrdinalIgnoreCase))
+				.ToList();
+		}
+		StateHasChanged();
+	}
+
+	private void SelectNewUnit(Unit unit)
+	{
+		searchNewUnit = unit.Name;
+		createProductCard.UnitId = unit.Id;
+		filteredUnits.Clear();
+		showNewUnitsSuggestions = false;
+	}
+
+	private void SelectEditedUnit(Unit unit)
+	{
+		searchEditedUnit = unit.Name;
+		createProductCard.UnitId = unit.Id;
+		filteredUnits.Clear();
+		showEditedUnitsSuggestions = false;
+	}
+
+	private void ShowAllEditedCategories()
+	{
+		if (categories is not null)
+		{
+			// Ustawiamy całą listę kategorii jako sugestie
+			filteredCategories = categories.ToList();
+			showEditedCategoriesSuggestions = true;
+		}
+
+		StateHasChanged();
+	}
+
+	private void ShowAllNewCategories()
+	{
+		if (categories is not null)
+		{
+			// Ustawiamy całą listę kategorii jako sugestie
+			filteredCategories = categories.ToList();
+			showNewCategoriesSuggestions = true;
+		}
+
+		StateHasChanged();
+	}
+
+	private void CategoriesOnNewSearchChanged(ChangeEventArgs e)
+	{
+		if (categories is not null && filteredCategories is not null)
+		{
+			searchNewCategory = e.Value.ToString();
+
+			if (string.IsNullOrWhiteSpace(searchNewCategory))
+			{
+				showNewCategoriesSuggestions = false;
+				filteredCategories.Clear();
+			}
+			else
+			{
+				showNewCategoriesSuggestions = true;
+				filteredCategories = categories
+					.Where(c => c.Name.Contains(searchNewCategory, StringComparison.OrdinalIgnoreCase))
+					.ToList();
+			}
+		}
+
+		StateHasChanged();
+	}
+
+	private void CategoriesOnEditedSearchChanged(ChangeEventArgs e)
+	{
+		if (categories is not null && filteredCategories is not null)
+		{
+			searchEditedCategory = e.Value.ToString();
+
+			if (string.IsNullOrWhiteSpace(searchEditedCategory))
+			{
+				showEditedCategoriesSuggestions = false;
+				filteredCategories.Clear();
+			}
+			else
+			{
+				showEditedCategoriesSuggestions = true;
+				filteredCategories = categories
+					.Where(c => c.Name.Contains(searchEditedCategory, StringComparison.OrdinalIgnoreCase))
+					.ToList();
+			}
+		}
+
+		StateHasChanged();
+	}
+
+	private void ToggleNewCategorySelection(int categoryId)
+	{
+		if (categories is not null)
+		{
+			if (selectedNewCategoryIds.Contains(categoryId))
+			{
+				selectedNewCategoryIds.Remove(categoryId);
+			}
+			else
+			{
+				selectedNewCategoryIds.Add(categoryId);
+			}
+
+			createProductCard.CategoryIds = selectedNewCategoryIds;
+
+			StateHasChanged();
+		}
+	}
+
+	private void ToggleEditedCategorySelection(int categoryId)
+	{
+		if (categories is not null)
+		{
+
+			if (selectedEditedCategoryIds.Contains(categoryId))
+			{
+				selectedEditedCategoryIds.Remove(categoryId);
+			}
+			else
+			{
+				selectedEditedCategoryIds.Add(categoryId);
+			}
+
+			createProductCard.CategoryIds = selectedEditedCategoryIds;
+
+			StateHasChanged();
+		}
+	}
+
+	private void HideEditedCategories()
+	{
+		showEditedCategoriesSuggestions = false;
+		StateHasChanged();
+	}
+
+	private void HideNewCategories()
+	{
+		showNewCategoriesSuggestions = false;
+		StateHasChanged();
+	}
+
+
 	private void OpenWindow(int id)
 	{
 		windowId = id;
@@ -549,6 +969,7 @@
 		}
 		else if (dictionaryType == "pc")
 		{
+			createProductCard = new();
 			OpenWindow(7);
 		}
 	}
@@ -557,22 +978,51 @@
 	{
 		if (dictionaryType == "m")
 		{
-			EditMagazine(currentMagazine);
-			OpenWindow(2);
+			if (recordId != "0")
+			{
+				EditMagazine(currentMagazine);
+				OpenWindow(2);
+			}
+			else
+			{
+				OpenWindow(11);
+			}
 		}
 		else if (dictionaryType == "u")
 		{
-			EditUnit(currentUnit);
-			OpenWindow(4);
+			if (recordId != "0")
+			{
+				EditUnit(currentUnit);
+				OpenWindow(4);
+			}
+			else
+			{
+				OpenWindow(11);
+			}
 		}
 		else if (dictionaryType == "c")
 		{
-			EditCategory(currentCategory);
-			OpenWindow(6);
+			if (recordId != "0")
+			{
+				EditCategory(currentCategory);
+				OpenWindow(6);
+			}
+			else
+			{
+				OpenWindow(11);
+			}
 		}
 		else if (dictionaryType == "pc")
 		{
-			OpenWindow(8);
+			if (recordId != "0")
+			{
+				EditProductCard(currentProductCard);
+				OpenWindow(8);
+			}
+			else
+			{
+				OpenWindow(11);
+			}
 		}
 	}
 }

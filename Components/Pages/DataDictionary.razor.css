@@ -155,16 +155,16 @@
         cursor: pointer;
     }
 
-    .active-row {
-        background-color: #ffd4cf !important; /* Kolor zaznaczonego wiersza */
-    }
+.active-row {
+    background-color: #ffd4cf !important; /* Kolor zaznaczonego wiersza */
+}
 
 
 
-        .dataDictionary-table tr.active-row td,
-        .dataDictionary-table tr.active-row th {
-            border: 1px solid #d3d3d3 !important;
-        }
+.dataDictionary-table tr.active-row td,
+.dataDictionary-table tr.active-row th {
+    border: 1px solid #d3d3d3 !important;
+}
 
 .magazine-container {
     position: absolute;
@@ -279,7 +279,7 @@
     transform: translate(-50%, -50%);
     border: #007fbf solid 2px;
     width: 500px;
-    height: 450px;
+    height: 510px;
     background: #f7fbfd;
     padding: 20px;
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
@@ -326,6 +326,25 @@
         margin-top: 10px;
     }
 
+.nullProduct-container {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border: #007fbf solid 2px;
+    width: 500px;
+    height: 230px;
+    background: #f7fbfd;
+    padding: 20px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+}
+
+    .nullProduct-container h2 {
+        text-align: center;
+        margin-bottom: 55px;
+        margin-top: 10px;
+    }
+
 .set-hidden {
     visibility: hidden;
 }
@@ -333,3 +352,142 @@
 .set-visible {
     visibility: visible;
 }
+
+.suggestions {
+    position: absolute; /* Unosi nad innymi elementami */
+    background: white;
+    border: 1px solid #ccc;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    width: 92%;
+    max-height: 200px;
+    overflow-y: auto;
+    z-index: 1000; /* Zapewnia, że będzie nad innymi elementami */
+}
+
+    .suggestions li {
+        padding: 8px;
+        cursor: pointer;
+    }
+
+        .suggestions li:hover {
+            background: #f0f0f0;
+        }
+
+.checkbox-container {
+    display: flex;
+    align-items: flex-start;
+    gap: 3px; /* Odstęp między checkboxem a nazwą */
+    justify-content: flex-start;
+}
+
+.categorySuggestions {
+    position: absolute;
+    background: white;
+    border: 1px solid #ccc;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    width: 92%;
+    max-height: 200px;
+    overflow-y: auto;
+    z-index: 1000;
+    border-radius: 5px;
+    text-align: left;
+}
+
+    .categorySuggestions li {
+        padding: 8px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+.category-item {
+    display: flex;
+    flex-direction: row; /* Elementy w jednej linii */
+    gap: 8px; /* Odstęp między checkboxem a tekstem */
+    padding: 8px;
+    cursor: pointer;
+    border-bottom: 1px solid #eee;
+}
+
+    .category-item:last-child {
+        border-bottom: none;
+    }
+
+
+    .category-item input {
+        transform: scale(1.2);
+        cursor: pointer;
+        margin: 0; /* Upewnia się, że checkbox nie ma dodatkowego marginesu */
+        padding: 0;
+        align-self: self-start;
+    }
+
+    .category-item label {
+        flex-grow: 1; /* Sprawia, że tekst nie ucieka */
+        text-align: left; /* Wymusza wyrównanie tekstu do lewej */
+    }
+
+    .category-item:hover {
+        background: #f8f8f8;
+        border-radius: 3px;
+    }
+
+.selected-categories {
+    margin-top: 10px;
+    padding: 0px;
+    border-radius: 5px;
+    max-width: 600px; 
+}
+
+.scrollable-list {
+    list-style: none;
+    padding: 5px;
+    margin: 0;
+    max-height: 88px; /* Ograniczona wysokość */
+    overflow-y: auto; /* Włączenie przewijania */
+    border: 1px solid #ddd; /* Subtelna ramka */
+    border-radius: 5px;
+    background: white;
+}
+
+    .scrollable-list li {
+        padding: 8px;
+        border-bottom: 1px solid #eee;
+    }
+
+        .scrollable-list li:last-child {
+            border-bottom: none; /* Usunięcie dolnej granicy dla ostatniego elementu */
+        }
+
+.search-container {
+    display: flex;
+    align-items: center;
+    gap: 3px; /* Odstęp między inputem a krzyżykiem */
+    position: relative;
+    width: 100%;
+}
+
+    .search-container input {
+        flex-grow: 1;
+    }
+
+.clear-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 18px;
+    color: #fa554a;
+    font-weight: bold;
+    font-family: Dubai;
+}
+
+    .clear-button:hover {
+        color: #d13028;
+    }
+
+

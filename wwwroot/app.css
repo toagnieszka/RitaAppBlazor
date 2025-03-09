@@ -1,6 +1,6 @@
-div{
-/*   border: red 1px dashed;*/
-}
+/*div, *{
+ border: red 1px dashed;
+}*/
 
 html, body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;

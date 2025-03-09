@@ -317,16 +317,17 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-left: 4rem;
-    margin-right: 4rem;
-    margin-bottom: 1.5rem;
+    margin: 1rem auto;
     padding-top: 60px;
+    width: 90%;
+    max-width: 4000px;
 }
 
 .search-bar {
     display: flex;
     align-items: center;
     gap: 0.5rem;
+    margin-left: 1rem;
 }
 
 .search-input {
@@ -353,6 +354,7 @@
 .action-buttons {
     display: flex;
     gap: 0.5rem;
+    margin-right: 1rem;
 }
 
 .action-button {
