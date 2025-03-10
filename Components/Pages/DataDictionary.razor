@@ -22,7 +22,7 @@
 		<div class="actions">
 			<button class="action-button" @onclick="()=>OpenCreatingWindows()">Dodaj</button>
 			<button class="action-button" @onclick="()=>OpenEditingWindows()">Edytuj</button>
-			<button class="action-button" @onclick="()=>OpenWindow(9)">Usuń</button>
+			<button class="action-button" @onclick="()=>OpenDeletingWindows()">Usuń</button>
 		</div>
 	</div>
 
@@ -253,6 +253,26 @@
 
 	<div class="delete-container @(windowId == 9 ? "set-visible" : "set-hidden")">
 		<h2>Czy na pewno chcesz usunąć wybrany element?</h2>
+
+		<div class="button-group">
+			<button class="cancel-button" @onclick="()=>CloseWindow(10)">Anuluj</button>
+			<button class="delete-button" @onclick="()=>DeleteItem()">Usuń</button>
+		</div>
+	</div>
+
+	<div class="delete-container @(windowId == 12 ? "set-visible" : "set-hidden")">
+		<h2 style="font-size: 20px; margin-bottom:0.5rem;">Usunięcie magazynu powiązanego z produktem spowoduje również usunięcie produktu.</h2>
+		<h2 style="font-size: 20px; font-weight: bold;">Czy na pewno chcesz usunąć magazyn?</h2>
+
+		<div class="button-group">
+			<button class="cancel-button" @onclick="()=>CloseWindow(10)">Anuluj</button>
+			<button class="delete-button" @onclick="()=>DeleteItem()">Usuń</button>
+		</div>
+	</div>
+
+	<div class="delete-container @(windowId == 13 ? "set-visible" : "set-hidden")">
+		<h2 style="font-size: 20px; margin-bottom:0.5rem;">Usunięcie karty produktu powiązanej z produktem spowoduje również usunięcie produktu.</h2>
+		<h2 style="font-size: 20px; font-weight: bold;">Czy na pewno chcesz usunąć kartę produktu?</h2>
 
 		<div class="button-group">
 			<button class="cancel-button" @onclick="()=>CloseWindow(10)">Anuluj</button>
@@ -1025,4 +1045,53 @@
 			}
 		}
 	}
+
+	private void OpenDeletingWindows()
+	{
+		if (dictionaryType == "m")
+		{
+			if (recordId != "0")
+			{
+				OpenWindow(12);
+			}
+			else
+			{
+				OpenWindow(11);
+			}
+		}
+		else if (dictionaryType == "u")
+		{
+			if (recordId != "0")
+			{
+				OpenWindow(9);
+			}
+			else
+			{
+				OpenWindow(11);
+			}
+		}
+		else if (dictionaryType == "c")
+		{
+			if (recordId != "0")
+			{
+				OpenWindow(9);
+			}
+			else
+			{
+				OpenWindow(11);
+			}
+		}
+		else if (dictionaryType == "pc")
+		{
+			if (recordId != "0")
+			{
+				OpenWindow(13);
+			}
+			else
+			{
+				OpenWindow(11);
+			}
+		}
+	}
 }
+
