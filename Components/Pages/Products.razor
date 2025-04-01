@@ -377,15 +377,17 @@
 
 	protected async override Task OnInitializedAsync()
 	{
-		var productResponse = await httpClient.GetAsync("http://localhost:5000/api/Products");
+		//var productResponse = await httpClient.GetAsync("http://localhost:5000/api/Products");
 		var magazineResponse = await httpClient.GetAsync("http://localhost:5000/api/Magazines");
 		var productCardResponse = await httpClient.GetAsync("http://localhost:5000/api/ProductCards");
 
-		if (productResponse.IsSuccessStatusCode)
-		{
-			var productText = await productResponse.Content.ReadAsStringAsync();
-			products = System.Text.Json.JsonSerializer.Deserialize<List<Product>>(productText);
-		}
+		// if (productResponse.IsSuccessStatusCode)
+		// {
+		// 	var productText = await productResponse.Content.ReadAsStringAsync();
+		// 	products = System.Text.Json.JsonSerializer.Deserialize<List<Product>>(productText);
+		// }
+
+		await GetAllProducts();
 
 		if (magazineResponse.IsSuccessStatusCode)
 		{
@@ -403,6 +405,16 @@
 		return;
 	}
 
+	private async Task<List<Product>> GetAllProducts()
+	{
+		var productResponse = await httpClient.GetAsync("http://localhost:5000/api/Products");
+		if (productResponse.IsSuccessStatusCode)
+		{
+			var productText = await productResponse.Content.ReadAsStringAsync();
+			products = System.Text.Json.JsonSerializer.Deserialize<List<Product>>(productText);
+		}
+		return products;
+	}
 
 	protected async Task UpdateProduct(Product product)
 	{
@@ -412,6 +424,7 @@
 		if (response.IsSuccessStatusCode)
 		{
 			CloseWindow(10);
+			await GetAllProducts();
 			StateHasChanged();
 		}
 		else
@@ -430,6 +443,7 @@
 		if (response.IsSuccessStatusCode)
 		{
 			CloseWindow(10);
+			await GetAllProducts();
 			StateHasChanged();
 		}
 		else
@@ -447,6 +461,7 @@
 		if (response.IsSuccessStatusCode)
 		{
 			CloseWindow(10);
+			await GetAllProducts();
 			StateHasChanged();
 		}
 		else

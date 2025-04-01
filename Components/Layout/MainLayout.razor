@@ -1,13 +1,41 @@
 ﻿@inherits LayoutComponentBase
+@inject NavigationManager NavManager
 
-<NavMenu />
+<NavMenu CurrentPage=@currentPage />
 
 <div class="main-content">
-    @Body
+	@Body
 </div>
 
 <style>
-    .main-content {
-        padding-top: 60px; /* Odstęp na pasek nawigacyjny */
-    }
+	.main-content {
+		padding-top: 60px; /* Odstęp na pasek nawigacyjny */
+	}
 </style>
+
+@code {
+	string Url = "";
+	string currentPage = "";
+
+	protected override  void OnParametersSet()
+	{
+		
+			Url = NavManager.Uri;
+
+			if (Url.Contains("/products"))
+			{
+				currentPage = "p";
+			}
+			if (Url.Contains("/dataDictionary"))
+			{
+				currentPage = "d";
+			}
+			if (Url.Contains("/userProfile"))
+			{
+				currentPage = "u";
+			}
+
+			StateHasChanged();
+		
+	 }
+}

@@ -441,38 +441,16 @@
 
 	protected async override Task OnInitializedAsync()
 	{
-		var magazineResponse = await httpClient.GetAsync("http://localhost:5000/api/Magazines");
-		var unitResponse = await httpClient.GetAsync("http://localhost:5000/api/Units");
-		var categoryResponse = await httpClient.GetAsync("http://localhost:5000/api/Categories");
-		var productCardResponse = await httpClient.GetAsync("http://localhost:5000/api/ProductCards");
+		await GetAllMagazines();
+		await GetAllUnits();
+		await GetAllCategories();
+		await GetAllProductCards();
 
-		if (magazineResponse.IsSuccessStatusCode)
-		{
-			var magazineText = await magazineResponse.Content.ReadAsStringAsync();
-			magazines = System.Text.Json.JsonSerializer.Deserialize<List<Magazine>>(magazineText);
-		}
-
-		if (unitResponse.IsSuccessStatusCode)
-		{
-			var unitText = await unitResponse.Content.ReadAsStringAsync();
-			units = System.Text.Json.JsonSerializer.Deserialize<List<Unit>>(unitText);
-		}
-
-		if (categoryResponse.IsSuccessStatusCode)
-		{
-			var categoryText = await categoryResponse.Content.ReadAsStringAsync();
-			categories = System.Text.Json.JsonSerializer.Deserialize<List<Category>>(categoryText);
-		}
-
-		if (productCardResponse.IsSuccessStatusCode)
-		{
-			var productCardText = await productCardResponse.Content.ReadAsStringAsync();
-			productCards = System.Text.Json.JsonSerializer.Deserialize<List<ProductCard>>(productCardText);
-		}
 		StateHasChanged();
 
 		return;
 	}
+
 
 	protected async override Task OnParametersSetAsync()
 	{
@@ -517,7 +495,20 @@
 
 	private void SetParameterValue(string dictionaryType, string id = "0")
 	{
-		NavManager.NavigateTo($"https://localhost:7110/dataDictionary?dt={dictionaryType}&id={id}");
+		NavManager.NavigateTo($"http://localhost:5100/dataDictionary?dt={dictionaryType}&id={id}");
+	}
+
+	protected async Task<List<Magazine>> GetAllMagazines()
+	{
+		var magazineResponse = await httpClient.GetAsync("http://localhost:5000/api/Magazines");
+
+		if (magazineResponse.IsSuccessStatusCode)
+		{
+			var magazineText = await magazineResponse.Content.ReadAsStringAsync();
+			magazines = System.Text.Json.JsonSerializer.Deserialize<List<Magazine>>(magazineText);
+		}
+
+		return magazines;
 	}
 
 	protected async Task CreateMagazine(Magazine magazine)
@@ -528,6 +519,7 @@
 		if (response.IsSuccessStatusCode)
 		{
 			CloseWindow(10);
+			await GetAllMagazines();
 			StateHasChanged();
 		}
 		else
@@ -546,6 +538,7 @@
 		if (response.IsSuccessStatusCode)
 		{
 			CloseWindow(10);
+			await GetAllMagazines();
 			StateHasChanged();
 		}
 		else
@@ -556,14 +549,31 @@
 
 	}
 
+
+	protected async Task<List<Unit>> GetAllUnits()
+	{
+		var unitResponse = await httpClient.GetAsync("http://localhost:5000/api/Units");
+
+		if (unitResponse.IsSuccessStatusCode)
+		{
+			var unitText = await unitResponse.Content.ReadAsStringAsync();
+			units = System.Text.Json.JsonSerializer.Deserialize<List<Unit>>(unitText);
+		}
+
+		return units;
+	}
+
 	protected async Task CreateUnit(Unit unit)
 	{
+
 		var json = JsonConvert.SerializeObject(unit);
 		var data = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
 		var response = await httpClient.PostAsync("http://localhost:5000/api/Units", data);
+
 		if (response.IsSuccessStatusCode)
 		{
 			CloseWindow(10);
+			await GetAllUnits();
 			StateHasChanged();
 		}
 		else
@@ -582,6 +592,7 @@
 		if (response.IsSuccessStatusCode)
 		{
 			CloseWindow(10);
+			await GetAllUnits();
 			StateHasChanged();
 		}
 		else
@@ -590,6 +601,19 @@
 			Console.WriteLine($"Błąd: {errorMessage}");
 		}
 
+	}
+
+
+	protected async Task<List<Category>> GetAllCategories()
+	{
+		var categoryResponse = await httpClient.GetAsync("http://localhost:5000/api/Categories");
+
+		if (categoryResponse.IsSuccessStatusCode)
+		{
+			var categoryText = await categoryResponse.Content.ReadAsStringAsync();
+			categories = System.Text.Json.JsonSerializer.Deserialize<List<Category>>(categoryText);
+		}
+		return categories;
 	}
 
 	protected async Task CreateCategory(Category category)
@@ -600,6 +624,7 @@
 		if (response.IsSuccessStatusCode)
 		{
 			CloseWindow(10);
+			await GetAllCategories();
 			StateHasChanged();
 		}
 		else
@@ -608,6 +633,39 @@
 			Console.WriteLine($"Błąd: {errorMessage}");
 		}
 
+	}
+
+
+	protected async Task UpdateCategory(Category category)
+	{
+		var json = JsonConvert.SerializeObject(category);
+		var data = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
+		var response = await httpClient.PutAsync("http://localhost:5000/api/Categories", data);
+		if (response.IsSuccessStatusCode)
+		{
+			CloseWindow(10);
+			await GetAllCategories();
+			StateHasChanged();
+		}
+		else
+		{
+			var errorMessage = await response.Content.ReadAsStringAsync();
+			Console.WriteLine($"Błąd: {errorMessage}");
+		}
+	}
+
+
+	protected async Task<List<ProductCard>> GetAllProductCards()
+	{
+		var productCardResponse = await httpClient.GetAsync("http://localhost:5000/api/ProductCards");
+
+		if (productCardResponse.IsSuccessStatusCode)
+		{
+			var productCardText = await productCardResponse.Content.ReadAsStringAsync();
+			productCards = System.Text.Json.JsonSerializer.Deserialize<List<ProductCard>>(productCardText);
+		}
+
+		return productCards;
 	}
 
 	protected async Task CreateProductCard(CreateProductCard createproductCard)
@@ -618,6 +676,7 @@
 		if (response.IsSuccessStatusCode)
 		{
 			CloseWindow(10);
+			await GetAllProductCards();
 			StateHasChanged();
 		}
 		else
@@ -626,23 +685,6 @@
 			Console.WriteLine($"Błąd: {errorMessage}");
 		}
 
-	}
-
-	protected async Task UpdateCategory(Category category)
-	{
-		var json = JsonConvert.SerializeObject(category);
-		var data = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
-		var response = await httpClient.PutAsync("http://localhost:5000/api/Categories", data);
-		if (response.IsSuccessStatusCode)
-		{
-			CloseWindow(10);
-			StateHasChanged();
-		}
-		else
-		{
-			var errorMessage = await response.Content.ReadAsStringAsync();
-			Console.WriteLine($"Błąd: {errorMessage}");
-		}
 	}
 
 	protected async Task UpdateProductCard(CreateProductCard productCard)
@@ -653,6 +695,7 @@
 		if (response.IsSuccessStatusCode)
 		{
 			CloseWindow(10);
+			await GetAllProductCards();
 			StateHasChanged();
 		}
 		else
@@ -686,6 +729,10 @@
 		if (response.IsSuccessStatusCode)
 		{
 			CloseWindow(10);
+			await GetAllMagazines();
+			await GetAllUnits();
+			await GetAllCategories();
+			await GetAllProductCards();
 			StateHasChanged();
 		}
 		else
