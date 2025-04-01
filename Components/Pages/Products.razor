@@ -3,6 +3,7 @@
 @using RitaAppBlazor.Data.Models
 @using System.Text.Json
 @using RitaAppBlazor.Data
+@inject NavigationManager NavManager
 
 
 <div class="main-container">
@@ -292,8 +293,8 @@
 
 	<div class="table-controls">
 		<div class="search-bar">
-			<input type="text" placeholder="Wyszukaj..." class="search-input" />
-			<button class="search-button">Szukaj</button>
+			<input type="text" placeholder="Wyszukaj..." class="search-input" @bind="searchProductName" />
+			<button class="search-button" @onclick="()=>GetProductsFromQuery(searchProductName)">Szukaj</button>
 		</div>
 		<div class="action-buttons">
 			<button class="action-button" @onclick="()=>OpenWindow(1)">Przyjmij</button>
@@ -353,10 +354,15 @@
 
 
 @code {
+	[Parameter]
+	[SupplyParameterFromQuery(Name = "searchText")]
+	public string searchTextFromQuery { get; set; } = "";
+
 	private bool checkedExpiryDate { get; set; } = false;
 	private Product currentProduct;
 	private Product tempProduct = new();
 	private Product newProduct = new();
+	public string searchProductName = "";
 	private string searchText;
 	private string searchTextNewMagazine;
 	private string searchTextProductCard;
@@ -408,6 +414,17 @@
 	private async Task<List<Product>> GetAllProducts()
 	{
 		var productResponse = await httpClient.GetAsync("http://localhost:5000/api/Products");
+		if (productResponse.IsSuccessStatusCode)
+		{
+			var productText = await productResponse.Content.ReadAsStringAsync();
+			products = System.Text.Json.JsonSerializer.Deserialize<List<Product>>(productText);
+		}
+		return products;
+	}
+
+	private async Task<List<Product>> GetProductsFromQuery(string searchText)
+	{
+		var productResponse = await httpClient.GetAsync($"http://localhost:5000/api/Products?searchText={searchText}");
 		if (productResponse.IsSuccessStatusCode)
 		{
 			var productText = await productResponse.Content.ReadAsStringAsync();
